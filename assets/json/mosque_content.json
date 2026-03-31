@@ -1,0 +1,50 @@
+[
+  {
+    "id": "mosque_entry_1",
+    "title": "دعاء دخول المسجد",
+    "text": "بِسْمِ اللَّهِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى رَسُولِ اللَّهِ، اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ.",
+    "source": "رواه مسلم",
+    "category": "دخول المسجد",
+    "tags": ["mosque_entry", "prayer_window"],
+    "priority": 100,
+    "displayContexts": ["before_prayer_specific"],
+    "type": "adhkar",
+    "order": 1
+  },
+  {
+    "id": "mosque_entry_2",
+    "title": "تحية المسجد",
+    "text": "قال رسول الله صلى الله عليه وسلم: «إِذَا دَخَلَ أَحَدُكُمُ الْمَسْجِدَ فَلَا يَجْلِسْ حَتَّى يُصَلِّيَ رَكْعَتَيْنِ».",
+    "source": "متفق عليه",
+    "category": "دخول المسجد",
+    "tags": ["mosque_entry", "prayer_window"],
+    "priority": 99,
+    "displayContexts": ["before_prayer_specific"],
+    "type": "hadith",
+    "order": 2
+  },
+  {
+    "id": "mosque_exit_1",
+    "title": "دعاء الخروج من المسجد",
+    "text": "بِسْمِ اللَّهِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى رَسُولِ اللَّهِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ.",
+    "source": "رواه مسلم",
+    "category": "الخروج من المسجد",
+    "tags": ["mosque_exit", "prayer_window"],
+    "priority": 100,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 3
+  },
+  {
+    "id": "mosque_exit_2",
+    "title": "فضل المشي إلى المسجد والرجوع منه",
+    "text": "قال رسول الله صلى الله عليه وسلم: «مَنْ غَدَا إِلَى الْمَسْجِدِ أَوْ رَاحَ، أَعَدَّ اللَّهُ لَهُ نُزُلَهُ مِنَ الْجَنَّةِ كُلَّمَا غَدَا أَوْ رَاحَ».",
+    "source": "متفق عليه",
+    "category": "الخروج من المسجد",
+    "tags": ["mosque_exit", "prayer_window"],
+    "priority": 99,
+    "displayContexts": ["after_prayer"],
+    "type": "hadith",
+    "order": 4
+  }
+]

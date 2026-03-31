@@ -1,0 +1,113 @@
+[
+  {
+    "id": "hadith_general_1",
+    "title": "فضل صلاة الجماعة",
+    "text": "صلاة الجماعة أفضل من صلاة الفذ بسبع وعشرين درجة.",
+    "source": "متفق عليه",
+    "tags": ["general", "congregation"],
+    "priority": 10,
+    "displayContexts": ["before_prayer_general", "between_prayers", "general"],
+    "type": "hadith",
+    "order": 1
+  },
+  {
+    "id": "hadith_general_2",
+    "title": "انتظار الصلاة عبادة",
+    "text": "لا يزال أحدكم في صلاة ما دامت الصلاة تحبسه، لا يمنعه أن ينقلب إلى أهله إلا الصلاة.",
+    "source": "متفق عليه",
+    "tags": ["general", "before_prayer"],
+    "priority": 9,
+    "displayContexts": ["before_prayer_general", "between_prayers", "general"],
+    "type": "hadith",
+    "order": 2
+  },
+  {
+    "id": "hadith_general_3",
+    "title": "السكينة إلى الصلاة",
+    "text": "إذا سمعتم الإقامة فامشوا إلى الصلاة وعليكم السكينة والوقار، ولا تسرعوا، فما أدركتم فصلوا وما فاتكم فأتموا.",
+    "source": "متفق عليه",
+    "tags": ["before_prayer", "congregation"],
+    "priority": 10,
+    "displayContexts": ["before_prayer_specific", "general"],
+    "type": "hadith",
+    "order": 3
+  },
+  {
+    "id": "hadith_general_4",
+    "title": "النداء والصف الأول",
+    "text": "لو يعلم الناس ما في النداء والصف الأول ثم لم يجدوا إلا أن يستهموا عليه لاستهموا.",
+    "source": "متفق عليه",
+    "tags": ["before_prayer", "congregation"],
+    "priority": 8,
+    "displayContexts": ["before_prayer_specific", "between_prayers"],
+    "type": "hadith",
+    "order": 4
+  },
+  {
+    "id": "hadith_general_5",
+    "title": "العتمة والفجر",
+    "text": "أثقل الصلاة على المنافقين صلاة العشاء وصلاة الفجر، ولو يعلمون ما فيهما لأتوهما ولو حبوًا.",
+    "source": "متفق عليه",
+    "tags": ["prayer_fajr", "prayer_isha", "congregation"],
+    "priority": 10,
+    "displayContexts": ["before_prayer_specific", "general"],
+    "type": "hadith",
+    "order": 5
+  },
+  {
+    "id": "hadith_general_6",
+    "title": "التحذير من تضييع العصر",
+    "text": "من ترك صلاة العصر فقد حبط عمله.",
+    "source": "رواه البخاري",
+    "tags": ["prayer_asr"],
+    "priority": 10,
+    "displayContexts": ["before_prayer_specific", "general"],
+    "type": "hadith",
+    "order": 6
+  },
+  {
+    "id": "hadith_general_7",
+    "title": "البردان",
+    "text": "من صلى البردين دخل الجنة.",
+    "source": "متفق عليه",
+    "tags": ["prayer_fajr", "prayer_asr"],
+    "priority": 8,
+    "displayContexts": ["between_prayers", "general"],
+    "type": "hadith",
+    "order": 7
+  },
+  {
+    "id": "hadith_general_8",
+    "title": "الذهاب إلى المسجد",
+    "text": "من غدا إلى المسجد أو راح أعد الله له نزلاً في الجنة كلما غدا أو راح.",
+    "source": "متفق عليه",
+    "tags": ["before_prayer", "congregation"],
+    "priority": 7,
+    "displayContexts": ["before_prayer_general", "between_prayers", "general"],
+    "type": "hadith",
+    "order": 8
+  },
+  {
+    "id": "hadith_general_9",
+    "title": "تحية المسجد",
+    "text": "إذا دخل أحدكم المسجد فلا يجلس حتى يصلي ركعتين.",
+    "source": "متفق عليه",
+    "tags": ["before_prayer", "masjid"],
+    "priority": 8,
+    "displayContexts": ["before_prayer_specific", "between_prayers"],
+    "type": "hadith",
+    "order": 9
+  },
+  {
+    "id": "hadith_general_10",
+    "title": "المحافظة على الصفوف",
+    "text": "سووا صفوفكم، فإن تسوية الصف من تمام الصلاة.",
+    "source": "متفق عليه",
+    "tags": ["before_prayer", "congregation"],
+    "priority": 8,
+    "displayContexts": ["before_prayer_specific", "general"],
+    "type": "hadith",
+    "order": 10
+  }
+]
+

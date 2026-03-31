@@ -1,0 +1,57 @@
+[
+  {
+    "id": "sunnah_1",
+    "title": "سنة الفجر",
+    "text": "ركعتا الفجر من السنن الرواتب المؤكدة، وكان النبي صلى الله عليه وسلم يحافظ عليهما حضرًا وسفرًا.",
+    "source": "متفق عليه",
+    "tags": ["sunnah", "prayer_fajr"],
+    "priority": 10,
+    "displayContexts": ["before_prayer_specific", "general"],
+    "type": "sunnah",
+    "order": 1
+  },
+  {
+    "id": "sunnah_2",
+    "title": "راتبة الظهر",
+    "text": "من السنن الرواتب بعد الظهر ركعتان، ويستحب المحافظة على الرواتب لما فيها من جبر النقص وزيادة القرب.",
+    "source": "متفق عليه في أصل الرواتب",
+    "tags": ["sunnah", "prayer_dhuhr"],
+    "priority": 9,
+    "displayContexts": ["after_prayer", "general"],
+    "type": "sunnah",
+    "order": 2
+  },
+  {
+    "id": "sunnah_3",
+    "title": "راتبة المغرب",
+    "text": "بعد المغرب ركعتان من السنن الرواتب، وهي من السنن التي داوم عليها النبي صلى الله عليه وسلم.",
+    "source": "متفق عليه في أصل الرواتب",
+    "tags": ["sunnah", "prayer_maghrib"],
+    "priority": 9,
+    "displayContexts": ["after_prayer", "general"],
+    "type": "sunnah",
+    "order": 3
+  },
+  {
+    "id": "sunnah_4",
+    "title": "راتبة العشاء",
+    "text": "بعد العشاء ركعتان من السنن الرواتب، وهي باب ثابت للمحافظة اليومية على النوافل.",
+    "source": "متفق عليه في أصل الرواتب",
+    "tags": ["sunnah", "prayer_isha"],
+    "priority": 9,
+    "displayContexts": ["after_prayer", "general"],
+    "type": "sunnah",
+    "order": 4
+  },
+  {
+    "id": "sunnah_5",
+    "title": "اثنتا عشرة ركعة",
+    "text": "من حافظ على اثنتي عشرة ركعة من السنن الرواتب بنى الله له بيتًا في الجنة، فليكن لك نصيب دائم من هذه الرواتب المباركة.",
+    "source": "رواه مسلم",
+    "tags": ["sunnah", "rawatib"],
+    "priority": 8,
+    "displayContexts": ["between_prayers", "general"],
+    "type": "sunnah",
+    "order": 5
+  }
+]

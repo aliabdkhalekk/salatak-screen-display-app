@@ -1,0 +1,35 @@
+name: salatak_smart_display
+description: Offline-first Android TV Islamic smart display for prayer times and contextual Islamic content.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.3.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  http: ^1.6.0
+  intl: ^0.20.2
+  adhan: ^2.0.0+1
+  timezone: ^0.11.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/json/nawawi.json
+    - assets/json/adhkar.json
+    - assets/json/hadith_general.json
+    - assets/json/friday_content.json
+    - assets/json/mosque_content.json
+    - assets/json/sunnah.json

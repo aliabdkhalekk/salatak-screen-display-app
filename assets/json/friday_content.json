@@ -1,0 +1,74 @@
+[
+  {
+    "id": "friday_1",
+    "title": "فضل يوم الجمعة",
+    "text": "قال رسول الله صلى الله عليه وسلم: «خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ، فِيهِ خُلِقَ آدَمُ، وَفِيهِ أُدْخِلَ الْجَنَّةَ، وَفِيهِ أُخْرِجَ مِنْهَا».",
+    "source": "رواه مسلم",
+    "category": "ركن الجمعة",
+    "tags": ["friday", "friday_content", "virtue"],
+    "priority": 10,
+    "displayContexts": ["friday", "general"],
+    "type": "friday",
+    "order": 1
+  },
+  {
+    "id": "friday_2",
+    "title": "سورة الكهف",
+    "text": "من آداب يوم الجمعة أن يحرص المسلم على قراءة سورة الكهف في هذا اليوم المبارك رجاء النور بين الجمعتين.",
+    "source": "آثار صحيحة في فضل قراءتها يوم الجمعة",
+    "category": "ركن الجمعة",
+    "tags": ["friday", "friday_content", "surah_kahf"],
+    "priority": 10,
+    "displayContexts": ["friday", "general"],
+    "type": "friday",
+    "order": 2
+  },
+  {
+    "id": "friday_3",
+    "title": "الإكثار من الصلاة على النبي ﷺ",
+    "text": "أكثروا من الصلاة والسلام على النبي صلى الله عليه وسلم في يوم الجمعة وليلتها، فهو يوم عظيم تتأكد فيه هذه العبادة.",
+    "source": "رواه أبو داود وغيره",
+    "category": "ركن الجمعة",
+    "tags": ["friday", "friday_content", "salawat"],
+    "priority": 10,
+    "displayContexts": ["friday"],
+    "type": "friday",
+    "order": 3
+  },
+  {
+    "id": "friday_4",
+    "title": "ساعة الإجابة",
+    "text": "في يوم الجمعة ساعة لا يوافقها عبد مسلم يسأل الله شيئًا إلا أعطاه إياه، فاجتهد في الدعاء وتحري هذه الساعة.",
+    "source": "متفق عليه",
+    "category": "ركن الجمعة",
+    "tags": ["friday", "friday_content", "dua"],
+    "priority": 9,
+    "displayContexts": ["friday"],
+    "type": "friday",
+    "order": 4
+  },
+  {
+    "id": "friday_5",
+    "title": "الغسل والتبكير إلى الجمعة",
+    "text": "من السنة في يوم الجمعة الغسل والتطيب والتبكير إلى المسجد والإنصات للخطبة، تعظيمًا لشعائر هذا اليوم.",
+    "source": "أحاديث صحيحة في أبواب الجمعة",
+    "category": "ركن الجمعة",
+    "tags": ["friday", "friday_content", "jumuah"],
+    "priority": 8,
+    "displayContexts": ["friday"],
+    "type": "friday",
+    "order": 5
+  },
+  {
+    "id": "friday_6",
+    "title": "الإنصات للخطبة",
+    "text": "إذا صعد الإمام المنبر فاجعل وقت الخطبة وقت إنصات وتدبر، ولا تشغل نفسك أو غيرك بما يقطع الانتفاع.",
+    "source": "أحاديث وآثار في آداب الجمعة",
+    "category": "ركن الجمعة",
+    "tags": ["friday", "friday_content", "khutbah"],
+    "priority": 7,
+    "displayContexts": ["friday"],
+    "type": "friday",
+    "order": 6
+  }
+]

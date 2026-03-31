@@ -1,0 +1,58 @@
+[
+  {
+    "id": "dhikr_after_adhan_1",
+    "title": "دعاء ما بعد الأذان",
+    "text": "اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ، وَالصَّلَاةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ.",
+    "source": "رواه البخاري",
+    "tags": ["adhkar", "after_adhan", "after_prayer"],
+    "priority": 10,
+    "displayContexts": ["after_adhan", "after_prayer"],
+    "type": "adhkar",
+    "order": 1
+  },
+  {
+    "id": "dhikr_after_prayer_1",
+    "title": "استغفار السلام",
+    "text": "يقال بعد الصلاة: أستغفر الله، أستغفر الله، أستغفر الله. اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام.",
+    "source": "رواه مسلم",
+    "tags": ["adhkar", "after_prayer"],
+    "priority": 9,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 2
+  },
+  {
+    "id": "dhikr_after_prayer_2",
+    "title": "تسبيح دبر الصلاة",
+    "text": "من الأذكار المأثورة بعد الصلاة: سبحان الله ثلاثًا وثلاثين، والحمد لله ثلاثًا وثلاثين، والله أكبر ثلاثًا وثلاثين، ثم تمام المائة: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.",
+    "source": "متفق عليه",
+    "tags": ["adhkar", "after_prayer"],
+    "priority": 8,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 3
+  },
+  {
+    "id": "dhikr_after_prayer_3",
+    "title": "آية الكرسي بعد الصلاة",
+    "text": "من السنة المحافظة على قراءة آية الكرسي بعد كل صلاة مكتوبة لما فيها من الأجر العظيم والوقاية بإذن الله.",
+    "source": "رواه النسائي وصححه جمع من أهل العلم",
+    "tags": ["adhkar", "after_prayer"],
+    "priority": 7,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 4
+  },
+  {
+    "id": "dhikr_after_prayer_4",
+    "title": "التهليل بعد الصلاة",
+    "text": "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير. لا حول ولا قوة إلا بالله، لا إله إلا الله، ولا نعبد إلا إياه، له النعمة وله الفضل وله الثناء الحسن.",
+    "source": "رواه مسلم",
+    "tags": ["adhkar", "after_prayer"],
+    "priority": 7,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 5
+  }
+]
+
