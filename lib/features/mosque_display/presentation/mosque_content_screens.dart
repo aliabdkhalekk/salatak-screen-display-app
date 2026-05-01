@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
@@ -418,23 +420,17 @@ class _MosqueScaffold extends StatelessWidget {
           child: Builder(
             builder: (context) {
               final padding = AppLayout.pagePadding(context);
-              final topReserve = AppLayout.fluid(context, min: 74, max: 96);
-              final bottomReserve = showFooter && prayerDay != null
-                  ? AppLayout.fluid(context, min: 64, max: 82)
-                  : topReserve;
-              final verticalReserve =
-                  topReserve > bottomReserve ? topReserve : bottomReserve;
+              final footerBottomInset = AppLayout.fluid(
+                context,
+                min: 20,
+                max: 40,
+              );
               return Padding(
                 padding: EdgeInsets.all(padding),
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: verticalReserve,
-                        ),
-                        child: Center(child: child),
-                      ),
+                      child: Center(child: child),
                     ),
                     Align(
                       alignment: AlignmentDirectional.topCenter,
@@ -446,11 +442,19 @@ class _MosqueScaffold extends StatelessWidget {
                       ),
                     ),
                     if (showFooter && prayerDay != null)
-                      Align(
-                        alignment: AlignmentDirectional.bottomCenter,
-                        child: _NextPrayerFooter(
-                          now: now,
-                          prayerDay: prayerDay!,
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: SafeArea(
+                          top: false,
+                          minimum: EdgeInsets.only(bottom: footerBottomInset),
+                          child: Center(
+                            child: _NextPrayerFooter(
+                              now: now,
+                              prayerDay: prayerDay!,
+                            ),
+                          ),
                         ),
                       ),
                   ],
@@ -515,47 +519,55 @@ class _NextPrayerFooter extends StatelessWidget {
     final nextPrayer = prayerDay.nextPrayer;
     final remaining = nextPrayer.time.difference(now);
     final textStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontSize: AppLayout.fluid(context, min: 17, max: 23),
+          fontSize: AppLayout.fluid(context, min: 13, max: 17),
           color: const Color(0xFFE8DDB6),
         );
 
-    return Align(
-      alignment: AlignmentDirectional.center,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.22),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: const Color(0xFFD8BE74).withValues(alpha: 0.34),
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppLayout.gap(context, compact: 12, medium: 18),
-            vertical: AppLayout.gap(context, compact: 5, medium: 7),
-          ),
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: AppLayout.gap(context, compact: 12, medium: 18),
-            runSpacing: AppLayout.gap(context, compact: 4, medium: 6),
-            children: [
-              Text(
-                'باقي على صلاة ${nextPrayer.name.arabicLabel}: '
-                '${_formatDuration(remaining)}',
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.rtl,
-                style: textStyle,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: AppLayout.fluid(context, min: 760, max: 1080),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.28),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: const Color(0xFFD8BE74).withValues(alpha: 0.34),
               ),
-              Text(
-                'وقت الصلاة: ${DateFormat('hh:mm a', 'ar').format(nextPrayer.time)}',
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.rtl,
-                style: textStyle?.copyWith(
-                  color: const Color(0xFFD8BE74),
-                ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppLayout.gap(context, compact: 12, medium: 18),
+                vertical: AppLayout.gap(context, compact: 6, medium: 8),
               ),
-            ],
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: AppLayout.gap(context, compact: 10, medium: 14),
+                runSpacing: AppLayout.gap(context, compact: 4, medium: 6),
+                children: [
+                  Text(
+                    'باقي على صلاة ${nextPrayer.name.arabicLabel}: '
+                    '${_formatDuration(remaining)}',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: textStyle,
+                  ),
+                  Text(
+                    'وقت الصلاة: ${DateFormat('hh:mm a', 'ar').format(nextPrayer.time)}',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: textStyle?.copyWith(
+                      color: const Color(0xFFD8BE74),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
