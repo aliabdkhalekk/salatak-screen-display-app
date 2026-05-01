@@ -29,11 +29,11 @@ abstract final class AppLayout {
   }
 
   static double visualScale(BuildContext context) {
-    return designScale(context).clamp(0.92, 1.08) as double;
+    return designScale(context).clamp(0.92, 1.08);
   }
 
   static double textDesignScale(BuildContext context) {
-    return designScale(context).clamp(1.0, 1.08) as double;
+    return designScale(context).clamp(1.0, 1.08);
   }
 
   static double pagePadding(BuildContext context) {
@@ -95,11 +95,10 @@ abstract final class AppLayout {
     double maxWidth = 1600,
   }) {
     final screenWidth = width(context);
-    final progress = ((screenWidth - minWidth) / (maxWidth - minWidth))
-        .clamp(0.0, 1.0) as double;
+    final progress =
+        ((screenWidth - minWidth) / (maxWidth - minWidth)).clamp(0.0, 1.0);
     final fluidValue = min + (max - min) * progress;
-    final profileTextScale =
-        scale(context).textScaleFactor.clamp(0.78, 1.60) as double;
+    final profileTextScale = scale(context).textScaleFactor.clamp(0.78, 1.60);
     return fluidValue * profileTextScale * textDesignScale(context);
   }
 
@@ -126,7 +125,7 @@ abstract final class AppLayout {
     if (width(context) < 960) {
       return width(context);
     }
-    return maxWidth.clamp(0.0, width(context)) as double;
+    return maxWidth.clamp(0.0, width(context));
   }
 
   static int contentPanelFlex(BuildContext context) {

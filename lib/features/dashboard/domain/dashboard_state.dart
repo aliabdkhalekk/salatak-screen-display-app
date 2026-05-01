@@ -9,7 +9,7 @@ class DashboardState {
     this.hijriDate,
     this.prayerDay,
     this.automation = const PrayerFlowSnapshot(
-      stage: PrayerFlowStage.idle,
+      mode: DisplayStateMode.blackScreen,
       prayer: null,
       stageStartedAt: null,
       stageEndsAt: null,
@@ -18,6 +18,7 @@ class DashboardState {
       exitDua: null,
       azkarItems: [],
     ),
+    this.errorMessage,
   });
 
   factory DashboardState.loading({
@@ -34,6 +35,7 @@ class DashboardState {
   final HijriDate? hijriDate;
   final PrayerDayInfo? prayerDay;
   final PrayerFlowSnapshot automation;
+  final String? errorMessage;
 
   DashboardState copyWith({
     bool? isLoading,
@@ -41,6 +43,7 @@ class DashboardState {
     HijriDate? hijriDate,
     PrayerDayInfo? prayerDay,
     PrayerFlowSnapshot? automation,
+    String? errorMessage,
   }) {
     return DashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -48,6 +51,7 @@ class DashboardState {
       hijriDate: hijriDate ?? this.hijriDate,
       prayerDay: prayerDay ?? this.prayerDay,
       automation: automation ?? this.automation,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }

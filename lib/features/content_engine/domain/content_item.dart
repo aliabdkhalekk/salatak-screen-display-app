@@ -84,17 +84,6 @@ class ContentItem {
     this.category,
   });
 
-  final String id;
-  final String title;
-  final String text;
-  final String source;
-  final List<String> tags;
-  final int priority;
-  final List<DisplayContext> displayContexts;
-  final ContentType type;
-  final int order;
-  final String? category;
-
   factory ContentItem.fromJson(Map<String, dynamic> json) {
     return ContentItem(
       id: json['id'].toString(),
@@ -118,6 +107,17 @@ class ContentItem {
       category: (json['category'] as String?)?.trim(),
     );
   }
+
+  final String id;
+  final String title;
+  final String text;
+  final String source;
+  final List<String> tags;
+  final int priority;
+  final List<DisplayContext> displayContexts;
+  final ContentType type;
+  final int order;
+  final String? category;
 
   bool hasContext(DisplayContext context) => displayContexts.contains(context);
 

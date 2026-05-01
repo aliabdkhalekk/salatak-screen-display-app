@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 
 import '../../../core/storage/hive_boxes.dart';
+import '../../../core/layout/tv_screen_profile.dart';
 import '../../hijri/domain/hijri_date.dart';
 import '../domain/app_settings.dart';
 
@@ -12,11 +13,26 @@ class SettingsRepository {
 
   AppSettings loadSettings() {
     return AppSettings(
+      screenProfile: TvScreenProfileX.fromStorage(
+        _settingsBox.get(HiveKeys.screenProfile) as String?,
+      ),
       cityId: (_settingsBox.get(HiveKeys.cityId) as String?) ?? 'cairo',
       prayerMethod: PrayerMethodOptionX.fromStorage(
         (_settingsBox.get(HiveKeys.prayerMethod) as String?) ??
             PrayerMethodOption.egyptian.name,
       ),
+      useDaylightSavingTime:
+          (_settingsBox.get(HiveKeys.useDaylightSavingTime) as bool?) ?? true,
+      fajrAdjustmentMinutes:
+          (_settingsBox.get(HiveKeys.fajrAdjustmentMinutes) as int?) ?? 0,
+      dhuhrAdjustmentMinutes:
+          (_settingsBox.get(HiveKeys.dhuhrAdjustmentMinutes) as int?) ?? 0,
+      asrAdjustmentMinutes:
+          (_settingsBox.get(HiveKeys.asrAdjustmentMinutes) as int?) ?? 0,
+      maghribAdjustmentMinutes:
+          (_settingsBox.get(HiveKeys.maghribAdjustmentMinutes) as int?) ?? 0,
+      ishaAdjustmentMinutes:
+          (_settingsBox.get(HiveKeys.ishaAdjustmentMinutes) as int?) ?? 0,
       hijriOffset: (_settingsBox.get(HiveKeys.hijriOffset) as int?) ?? 0,
       displayFontSize: DisplayFontSizeOptionX.fromStorage(
         _settingsBox.get(HiveKeys.displayFontSize) as String?,
@@ -24,10 +40,16 @@ class SettingsRepository {
       displayFontWeight: DisplayFontWeightOptionX.fromStorage(
         _settingsBox.get(HiveKeys.displayFontWeight) as String?,
       ),
+      arabicFontStyle: ArabicFontStyleOptionX.fromStorage(
+        _settingsBox.get(HiveKeys.arabicFontStyle) as String?,
+      ),
       prePrayerWindowMinutes:
-          (_settingsBox.get(HiveKeys.prePrayerWindowMinutes) as int?) ?? 10,
+          (_settingsBox.get(HiveKeys.prePrayerWindowMinutes) as int?) ?? 20,
       entryDuaDurationMinutes:
-          (_settingsBox.get(HiveKeys.entryDuaDurationMinutes) as int?) ?? 10,
+          (_settingsBox.get(HiveKeys.entryDuaDurationMinutes) as int?) ?? 20,
+      afterAdhanAzkarStartOffsetMinutes: (_settingsBox
+              .get(HiveKeys.afterAdhanAzkarStartOffsetMinutes) as int?) ??
+          30,
       azkarDurationMinutes:
           (_settingsBox.get(HiveKeys.azkarDurationMinutes) as int?) ??
               (_settingsBox.get(HiveKeys.postPrayerWindowMinutes) as int?) ??
@@ -36,10 +58,17 @@ class SettingsRepository {
           (_settingsBox.get(HiveKeys.exitDuaDurationMinutes) as int?) ?? 20,
       uiScalePercent:
           (_settingsBox.get(HiveKeys.uiScalePercent) as int?) ?? 100,
-      zikrTextScalePercent:
-          (_settingsBox.get(HiveKeys.zikrTextScalePercent) as int?) ?? 100,
       sleepBrightnessPercent:
           (_settingsBox.get(HiveKeys.sleepBrightnessPercent) as int?) ?? 5,
+      screenLockModeEnabled:
+          (_settingsBox.get(HiveKeys.screenLockModeEnabled) as bool?) ?? true,
+      showNextPrayerFooter:
+          (_settingsBox.get(HiveKeys.showNextPrayerFooter) as bool?) ?? true,
+      keepScreenAlwaysOn:
+          (_settingsBox.get(HiveKeys.keepScreenAlwaysOn) as bool?) ?? true,
+      offModeType: OffModeTypeOptionX.fromStorage(
+        _settingsBox.get(HiveKeys.offModeType) as String?,
+      ),
       autoScreenControlEnabled:
           (_settingsBox.get(HiveKeys.autoScreenControlEnabled) as bool?) ??
               true,
@@ -55,8 +84,36 @@ class SettingsRepository {
   }
 
   Future<void> saveSettings(AppSettings settings) async {
+    await _settingsBox.put(
+      HiveKeys.screenProfile,
+      settings.screenProfile.storageValue,
+    );
     await _settingsBox.put(HiveKeys.cityId, settings.cityId);
     await _settingsBox.put(HiveKeys.prayerMethod, settings.prayerMethod.name);
+    await _settingsBox.put(
+      HiveKeys.useDaylightSavingTime,
+      settings.useDaylightSavingTime,
+    );
+    await _settingsBox.put(
+      HiveKeys.fajrAdjustmentMinutes,
+      settings.fajrAdjustmentMinutes,
+    );
+    await _settingsBox.put(
+      HiveKeys.dhuhrAdjustmentMinutes,
+      settings.dhuhrAdjustmentMinutes,
+    );
+    await _settingsBox.put(
+      HiveKeys.asrAdjustmentMinutes,
+      settings.asrAdjustmentMinutes,
+    );
+    await _settingsBox.put(
+      HiveKeys.maghribAdjustmentMinutes,
+      settings.maghribAdjustmentMinutes,
+    );
+    await _settingsBox.put(
+      HiveKeys.ishaAdjustmentMinutes,
+      settings.ishaAdjustmentMinutes,
+    );
     await _settingsBox.put(HiveKeys.hijriOffset, settings.hijriOffset);
     await _settingsBox.put(
       HiveKeys.displayFontSize,
@@ -67,12 +124,20 @@ class SettingsRepository {
       settings.displayFontWeight.name,
     );
     await _settingsBox.put(
+      HiveKeys.arabicFontStyle,
+      settings.arabicFontStyle.name,
+    );
+    await _settingsBox.put(
       HiveKeys.prePrayerWindowMinutes,
       settings.prePrayerWindowMinutes,
     );
     await _settingsBox.put(
       HiveKeys.entryDuaDurationMinutes,
       settings.entryDuaDurationMinutes,
+    );
+    await _settingsBox.put(
+      HiveKeys.afterAdhanAzkarStartOffsetMinutes,
+      settings.afterAdhanAzkarStartOffsetMinutes,
     );
     await _settingsBox.put(
       HiveKeys.azkarDurationMinutes,
@@ -87,12 +152,24 @@ class SettingsRepository {
       settings.uiScalePercent,
     );
     await _settingsBox.put(
-      HiveKeys.zikrTextScalePercent,
-      settings.zikrTextScalePercent,
-    );
-    await _settingsBox.put(
       HiveKeys.sleepBrightnessPercent,
       settings.sleepBrightnessPercent,
+    );
+    await _settingsBox.put(
+      HiveKeys.screenLockModeEnabled,
+      settings.screenLockModeEnabled,
+    );
+    await _settingsBox.put(
+      HiveKeys.showNextPrayerFooter,
+      settings.showNextPrayerFooter,
+    );
+    await _settingsBox.put(
+      HiveKeys.keepScreenAlwaysOn,
+      settings.keepScreenAlwaysOn,
+    );
+    await _settingsBox.put(
+      HiveKeys.offModeType,
+      settings.offModeType.name,
     );
     await _settingsBox.put(
       HiveKeys.autoScreenControlEnabled,

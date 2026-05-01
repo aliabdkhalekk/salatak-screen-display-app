@@ -76,6 +76,30 @@ void main() {
       }
     });
 
+    test('can disable daylight saving adjustments for displayed prayer times',
+        () {
+      final location = tz.getLocation(cairoCity.timeZoneId);
+      final service = _buildService();
+
+      final enabledDay = service.buildPrayerDay(
+        now: tz.TZDateTime(location, 2026, 7, 1, 12),
+        city: cairoCity,
+        settings: settings,
+      );
+      final disabledDay = service.buildPrayerDay(
+        now: tz.TZDateTime(location, 2026, 7, 1, 12),
+        city: cairoCity,
+        settings: settings.copyWith(useDaylightSavingTime: false),
+      );
+
+      expect(
+        disabledDay
+            .timeFor(PrayerName.fajr)
+            .difference(enabledDay.timeFor(PrayerName.fajr)),
+        const Duration(hours: -1),
+      );
+    });
+
     test(
         'countdown crosses the DST spring-forward boundary by real elapsed time',
         () {

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../storage/hive_boxes.dart';
 
@@ -15,6 +16,7 @@ abstract final class AppBootstrap {
     await Hive.initFlutter();
     await Hive.openBox<dynamic>(HiveBoxes.settings);
     await Hive.openBox<String>(HiveBoxes.cache);
+    await WakelockPlus.enable();
 
     if (_supportsImmersiveLandscape()) {
       await SystemChrome.setPreferredOrientations(

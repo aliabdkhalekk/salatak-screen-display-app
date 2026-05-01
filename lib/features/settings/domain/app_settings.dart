@@ -1,3 +1,6 @@
+import '../../../core/layout/tv_screen_profile.dart';
+import '../../prayer/domain/prayer_models.dart';
+
 enum PrayerMethodOption {
   egyptian,
   ummAlQura,
@@ -108,20 +111,97 @@ extension DisplayFontWeightOptionX on DisplayFontWeightOption {
   }
 }
 
+enum ArabicFontStyleOption {
+  classicQuranic,
+  modernKufi,
+  elegantRuqaa,
+  simpleReadable,
+}
+
+extension ArabicFontStyleOptionX on ArabicFontStyleOption {
+  String get labelArabic {
+    switch (this) {
+      case ArabicFontStyleOption.classicQuranic:
+        return 'Classic Quranic / كلاسيكي قرآني';
+      case ArabicFontStyleOption.modernKufi:
+        return 'Modern Kufi / كوفي حديث';
+      case ArabicFontStyleOption.elegantRuqaa:
+        return 'Elegant Ruqaa / رقعة أنيقة';
+      case ArabicFontStyleOption.simpleReadable:
+        return 'Simple Readable / واضح وبسيط';
+    }
+  }
+
+  String get fontFamily {
+    switch (this) {
+      case ArabicFontStyleOption.classicQuranic:
+        return 'ScheherazadeNew';
+      case ArabicFontStyleOption.modernKufi:
+        return 'NotoKufiArabic';
+      case ArabicFontStyleOption.elegantRuqaa:
+        return 'ArefRuqaa';
+      case ArabicFontStyleOption.simpleReadable:
+        return 'Cairo';
+    }
+  }
+
+  static ArabicFontStyleOption fromStorage(String? value) {
+    return ArabicFontStyleOption.values.firstWhere(
+      (option) => option.name == value,
+      orElse: () => ArabicFontStyleOption.classicQuranic,
+    );
+  }
+}
+
+enum OffModeTypeOption {
+  realStandby,
+  blackScreenFallback,
+}
+
+extension OffModeTypeOptionX on OffModeTypeOption {
+  String get labelArabic {
+    switch (this) {
+      case OffModeTypeOption.realStandby:
+        return 'Real standby / إطفاء حقيقي إن أمكن';
+      case OffModeTypeOption.blackScreenFallback:
+        return 'Black screen fallback / شاشة سوداء فقط';
+    }
+  }
+
+  static OffModeTypeOption fromStorage(String? value) {
+    return OffModeTypeOption.values.firstWhere(
+      (option) => option.name == value,
+      orElse: () => OffModeTypeOption.realStandby,
+    );
+  }
+}
+
 class AppSettings {
   const AppSettings({
+    required this.screenProfile,
     required this.cityId,
     required this.prayerMethod,
+    required this.useDaylightSavingTime,
+    required this.fajrAdjustmentMinutes,
+    required this.dhuhrAdjustmentMinutes,
+    required this.asrAdjustmentMinutes,
+    required this.maghribAdjustmentMinutes,
+    required this.ishaAdjustmentMinutes,
     required this.hijriOffset,
     required this.displayFontSize,
     required this.displayFontWeight,
+    required this.arabicFontStyle,
     required this.prePrayerWindowMinutes,
     required this.entryDuaDurationMinutes,
+    required this.afterAdhanAzkarStartOffsetMinutes,
     required this.azkarDurationMinutes,
     required this.exitDuaDurationMinutes,
     required this.uiScalePercent,
-    required this.zikrTextScalePercent,
     required this.sleepBrightnessPercent,
+    required this.screenLockModeEnabled,
+    required this.showNextPrayerFooter,
+    required this.keepScreenAlwaysOn,
+    required this.offModeType,
     required this.autoScreenControlEnabled,
     required this.entryDuaEnabled,
     required this.afterPrayerAzkarEnabled,
@@ -131,18 +211,30 @@ class AppSettings {
 
   factory AppSettings.defaults() {
     return const AppSettings(
+      screenProfile: TvScreenProfile.inch55,
       cityId: 'cairo',
       prayerMethod: PrayerMethodOption.egyptian,
+      useDaylightSavingTime: true,
+      fajrAdjustmentMinutes: 0,
+      dhuhrAdjustmentMinutes: 0,
+      asrAdjustmentMinutes: 0,
+      maghribAdjustmentMinutes: 0,
+      ishaAdjustmentMinutes: 0,
       hijriOffset: 0,
       displayFontSize: DisplayFontSizeOption.medium,
       displayFontWeight: DisplayFontWeightOption.normal,
-      prePrayerWindowMinutes: 10,
-      entryDuaDurationMinutes: 10,
+      arabicFontStyle: ArabicFontStyleOption.classicQuranic,
+      prePrayerWindowMinutes: 20,
+      entryDuaDurationMinutes: 20,
+      afterAdhanAzkarStartOffsetMinutes: 30,
       azkarDurationMinutes: 20,
       exitDuaDurationMinutes: 20,
       uiScalePercent: 100,
-      zikrTextScalePercent: 100,
       sleepBrightnessPercent: 5,
+      screenLockModeEnabled: true,
+      showNextPrayerFooter: true,
+      keepScreenAlwaysOn: true,
+      offModeType: OffModeTypeOption.realStandby,
       autoScreenControlEnabled: true,
       entryDuaEnabled: true,
       afterPrayerAzkarEnabled: true,
@@ -151,39 +243,76 @@ class AppSettings {
     );
   }
 
+  final TvScreenProfile screenProfile;
   final String cityId;
   final PrayerMethodOption prayerMethod;
+  final bool useDaylightSavingTime;
+  final int fajrAdjustmentMinutes;
+  final int dhuhrAdjustmentMinutes;
+  final int asrAdjustmentMinutes;
+  final int maghribAdjustmentMinutes;
+  final int ishaAdjustmentMinutes;
   final int hijriOffset;
   final DisplayFontSizeOption displayFontSize;
   final DisplayFontWeightOption displayFontWeight;
+  final ArabicFontStyleOption arabicFontStyle;
   final int prePrayerWindowMinutes;
   final int entryDuaDurationMinutes;
+  final int afterAdhanAzkarStartOffsetMinutes;
   final int azkarDurationMinutes;
   final int exitDuaDurationMinutes;
   final int uiScalePercent;
-  final int zikrTextScalePercent;
   final int sleepBrightnessPercent;
+  final bool screenLockModeEnabled;
+  final bool showNextPrayerFooter;
+  final bool keepScreenAlwaysOn;
+  final OffModeTypeOption offModeType;
   final bool autoScreenControlEnabled;
   final bool entryDuaEnabled;
   final bool afterPrayerAzkarEnabled;
   final bool exitDuaEnabled;
   final bool manualOverrideMode;
 
-  int get azkarItemSeconds => 12;
+  int manualAdjustmentFor(PrayerName prayer) {
+    switch (prayer) {
+      case PrayerName.fajr:
+        return fajrAdjustmentMinutes;
+      case PrayerName.dhuhr:
+        return dhuhrAdjustmentMinutes;
+      case PrayerName.asr:
+        return asrAdjustmentMinutes;
+      case PrayerName.maghrib:
+        return maghribAdjustmentMinutes;
+      case PrayerName.isha:
+        return ishaAdjustmentMinutes;
+    }
+  }
 
   AppSettings copyWith({
+    TvScreenProfile? screenProfile,
     String? cityId,
     PrayerMethodOption? prayerMethod,
+    bool? useDaylightSavingTime,
+    int? fajrAdjustmentMinutes,
+    int? dhuhrAdjustmentMinutes,
+    int? asrAdjustmentMinutes,
+    int? maghribAdjustmentMinutes,
+    int? ishaAdjustmentMinutes,
     int? hijriOffset,
     DisplayFontSizeOption? displayFontSize,
     DisplayFontWeightOption? displayFontWeight,
+    ArabicFontStyleOption? arabicFontStyle,
     int? prePrayerWindowMinutes,
     int? entryDuaDurationMinutes,
+    int? afterAdhanAzkarStartOffsetMinutes,
     int? azkarDurationMinutes,
     int? exitDuaDurationMinutes,
     int? uiScalePercent,
-    int? zikrTextScalePercent,
     int? sleepBrightnessPercent,
+    bool? screenLockModeEnabled,
+    bool? showNextPrayerFooter,
+    bool? keepScreenAlwaysOn,
+    OffModeTypeOption? offModeType,
     bool? autoScreenControlEnabled,
     bool? entryDuaEnabled,
     bool? afterPrayerAzkarEnabled,
@@ -191,22 +320,41 @@ class AppSettings {
     bool? manualOverrideMode,
   }) {
     return AppSettings(
+      screenProfile: screenProfile ?? this.screenProfile,
       cityId: cityId ?? this.cityId,
       prayerMethod: prayerMethod ?? this.prayerMethod,
+      useDaylightSavingTime:
+          useDaylightSavingTime ?? this.useDaylightSavingTime,
+      fajrAdjustmentMinutes:
+          fajrAdjustmentMinutes ?? this.fajrAdjustmentMinutes,
+      dhuhrAdjustmentMinutes:
+          dhuhrAdjustmentMinutes ?? this.dhuhrAdjustmentMinutes,
+      asrAdjustmentMinutes: asrAdjustmentMinutes ?? this.asrAdjustmentMinutes,
+      maghribAdjustmentMinutes:
+          maghribAdjustmentMinutes ?? this.maghribAdjustmentMinutes,
+      ishaAdjustmentMinutes:
+          ishaAdjustmentMinutes ?? this.ishaAdjustmentMinutes,
       hijriOffset: hijriOffset ?? this.hijriOffset,
       displayFontSize: displayFontSize ?? this.displayFontSize,
       displayFontWeight: displayFontWeight ?? this.displayFontWeight,
+      arabicFontStyle: arabicFontStyle ?? this.arabicFontStyle,
       prePrayerWindowMinutes:
           prePrayerWindowMinutes ?? this.prePrayerWindowMinutes,
       entryDuaDurationMinutes:
           entryDuaDurationMinutes ?? this.entryDuaDurationMinutes,
+      afterAdhanAzkarStartOffsetMinutes: afterAdhanAzkarStartOffsetMinutes ??
+          this.afterAdhanAzkarStartOffsetMinutes,
       azkarDurationMinutes: azkarDurationMinutes ?? this.azkarDurationMinutes,
       exitDuaDurationMinutes:
           exitDuaDurationMinutes ?? this.exitDuaDurationMinutes,
       uiScalePercent: uiScalePercent ?? this.uiScalePercent,
-      zikrTextScalePercent: zikrTextScalePercent ?? this.zikrTextScalePercent,
       sleepBrightnessPercent:
           sleepBrightnessPercent ?? this.sleepBrightnessPercent,
+      screenLockModeEnabled:
+          screenLockModeEnabled ?? this.screenLockModeEnabled,
+      showNextPrayerFooter: showNextPrayerFooter ?? this.showNextPrayerFooter,
+      keepScreenAlwaysOn: keepScreenAlwaysOn ?? this.keepScreenAlwaysOn,
+      offModeType: offModeType ?? this.offModeType,
       autoScreenControlEnabled:
           autoScreenControlEnabled ?? this.autoScreenControlEnabled,
       entryDuaEnabled: entryDuaEnabled ?? this.entryDuaEnabled,

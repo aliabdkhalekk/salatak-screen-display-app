@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/layout/tv_screen_profile.dart';
+import '../../prayer/domain/prayer_models.dart';
 import '../data/settings_repository.dart';
 import '../domain/app_settings.dart';
 
@@ -21,6 +23,11 @@ class SettingsController extends Notifier<AppSettings> {
     return _repository.loadSettings();
   }
 
+  Future<void> updateScreenProfile(TvScreenProfile profile) async {
+    state = state.copyWith(screenProfile: profile);
+    await _repository.saveSettings(state);
+  }
+
   Future<void> updateCity(String cityId) async {
     state = state.copyWith(cityId: cityId);
     await _repository.saveSettings(state);
@@ -28,6 +35,26 @@ class SettingsController extends Notifier<AppSettings> {
 
   Future<void> updatePrayerMethod(PrayerMethodOption method) async {
     state = state.copyWith(prayerMethod: method);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateDaylightSavingTime(bool enabled) async {
+    state = state.copyWith(useDaylightSavingTime: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateManualPrayerAdjustment(
+    PrayerName prayer,
+    int minutes,
+  ) async {
+    final clamped = minutes.clamp(-60, 60);
+    state = switch (prayer) {
+      PrayerName.fajr => state.copyWith(fajrAdjustmentMinutes: clamped),
+      PrayerName.dhuhr => state.copyWith(dhuhrAdjustmentMinutes: clamped),
+      PrayerName.asr => state.copyWith(asrAdjustmentMinutes: clamped),
+      PrayerName.maghrib => state.copyWith(maghribAdjustmentMinutes: clamped),
+      PrayerName.isha => state.copyWith(ishaAdjustmentMinutes: clamped),
+    };
     await _repository.saveSettings(state);
   }
 
@@ -54,6 +81,11 @@ class SettingsController extends Notifier<AppSettings> {
     await _repository.saveSettings(state);
   }
 
+  Future<void> updateArabicFontStyle(ArabicFontStyleOption option) async {
+    state = state.copyWith(arabicFontStyle: option);
+    await _repository.saveSettings(state);
+  }
+
   Future<void> updatePrePrayerWindowMinutes(int minutes) async {
     state = state.copyWith(prePrayerWindowMinutes: minutes.clamp(1, 120));
     await _repository.saveSettings(state);
@@ -61,6 +93,13 @@ class SettingsController extends Notifier<AppSettings> {
 
   Future<void> updateEntryDuaDurationMinutes(int minutes) async {
     state = state.copyWith(entryDuaDurationMinutes: minutes.clamp(1, 120));
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateAfterAdhanAzkarStartOffsetMinutes(int minutes) async {
+    state = state.copyWith(
+      afterAdhanAzkarStartOffsetMinutes: minutes.clamp(0, 180),
+    );
     await _repository.saveSettings(state);
   }
 
@@ -79,13 +118,28 @@ class SettingsController extends Notifier<AppSettings> {
     await _repository.saveSettings(state);
   }
 
-  Future<void> updateZikrTextScalePercent(int percent) async {
-    state = state.copyWith(zikrTextScalePercent: percent.clamp(70, 160));
+  Future<void> updateSleepBrightnessPercent(int percent) async {
+    state = state.copyWith(sleepBrightnessPercent: percent.clamp(1, 100));
     await _repository.saveSettings(state);
   }
 
-  Future<void> updateSleepBrightnessPercent(int percent) async {
-    state = state.copyWith(sleepBrightnessPercent: percent.clamp(1, 100));
+  Future<void> updateScreenLockModeEnabled(bool enabled) async {
+    state = state.copyWith(screenLockModeEnabled: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateShowNextPrayerFooter(bool enabled) async {
+    state = state.copyWith(showNextPrayerFooter: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateKeepScreenAlwaysOn(bool enabled) async {
+    state = state.copyWith(keepScreenAlwaysOn: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateOffModeType(OffModeTypeOption option) async {
+    state = state.copyWith(offModeType: option);
     await _repository.saveSettings(state);
   }
 

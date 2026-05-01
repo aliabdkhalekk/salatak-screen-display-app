@@ -191,21 +191,59 @@ class PrayerCalculationService {
     );
     final cachedDay = month?.entryFor(normalizedDate);
 
-    if (cachedDay != null) {
-      return cachedDay.toEntries(location);
-    }
+    final entries = cachedDay != null
+        ? cachedDay.toEntries(location)
+        : _PrayerDayTimes.fromPrayerTimes(
+            date: normalizedDate,
+            prayerTimes: _buildLocalPrayerTimes(
+              date: normalizedDate,
+              city: city,
+              settings: settings,
+            ),
+            location: location,
+          ).toEntries(location);
 
-    final localTimes = _buildLocalPrayerTimes(
-      date: normalizedDate,
+    return _applySettingsToEntries(
+      entries: entries,
       city: city,
       settings: settings,
     );
+  }
 
-    return _PrayerDayTimes.fromPrayerTimes(
-      date: normalizedDate,
-      prayerTimes: localTimes,
-      location: location,
-    ).toEntries(location);
+  List<PrayerTimeEntry> _applySettingsToEntries({
+    required List<PrayerTimeEntry> entries,
+    required AppCity city,
+    required AppSettings settings,
+  }) {
+    final adjusted = entries.map((entry) {
+      var time = entry.time;
+
+      if (!settings.useDaylightSavingTime) {
+        final standardOffset = _standardOffsetFor(city, time.year);
+        final daylightDelta = time.timeZoneOffset - standardOffset;
+        if (daylightDelta != Duration.zero) {
+          time = time.subtract(daylightDelta);
+        }
+      }
+
+      final manualAdjustment = settings.manualAdjustmentFor(entry.name);
+      if (manualAdjustment != 0) {
+        time = time.add(Duration(minutes: manualAdjustment));
+      }
+
+      return PrayerTimeEntry(name: entry.name, time: time);
+    }).toList(growable: false);
+
+    return adjusted..sort((a, b) => a.time.compareTo(b.time));
+  }
+
+  Duration _standardOffsetFor(AppCity city, int year) {
+    final location = _timeService.locationForCity(city);
+    final januaryOffset = tz.TZDateTime(location, year, 1, 15).timeZoneOffset;
+    final julyOffset = tz.TZDateTime(location, year, 7, 15).timeZoneOffset;
+    return januaryOffset.inMinutes <= julyOffset.inMinutes
+        ? januaryOffset
+        : julyOffset;
   }
 
   _MonthlyPrayerCalendar? _loadCachedMonth(

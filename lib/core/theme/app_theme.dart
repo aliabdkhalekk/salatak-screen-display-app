@@ -9,6 +9,7 @@ abstract final class AppTheme {
     required double uiScale,
     required double fontScale,
     required bool boldText,
+    required String arabicFontFamily,
   }) {
     const ivory = Color(0xFFF5ECD2);
     const gold = Color(0xFFD8BE74);
@@ -24,6 +25,13 @@ abstract final class AppTheme {
     final titleWeight = boldText ? FontWeight.w700 : FontWeight.w600;
     final bodyWeight = boldText ? FontWeight.w600 : FontWeight.w400;
     final labelWeight = boldText ? FontWeight.w700 : FontWeight.w600;
+    const arabicFontFallback = <String>[
+      'Amiri',
+      'ScheherazadeNew',
+      'Cairo',
+      'NotoKufiArabic',
+      'ArefRuqaa',
+    ];
 
     final base = ThemeData(
       brightness: Brightness.dark,
@@ -45,57 +53,107 @@ abstract final class AppTheme {
       ],
       textTheme: base.textTheme.copyWith(
         displayLarge: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.displayLarge,
           fontWeight: displayWeight,
           color: ivory,
           height: 1.15,
         ),
         displayMedium: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.displayMedium,
           fontWeight: displayWeight,
           color: ivory,
           height: 1.2,
         ),
         headlineMedium: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.headlineMedium,
           fontWeight: displayWeight,
           color: ivory,
           height: 1.3,
         ),
         titleLarge: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.titleLarge,
           fontWeight: titleWeight,
           color: ivory,
           height: 1.3,
         ),
         titleMedium: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.titleMedium,
           fontWeight: titleWeight,
           color: ivory,
           height: 1.35,
         ),
         bodyLarge: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.bodyLarge,
           fontWeight: bodyWeight,
           color: ivory,
           height: 1.7,
         ),
         bodyMedium: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.bodyMedium,
           fontWeight: bodyWeight,
           color: const Color(0xFFE8DDB6),
           height: 1.6,
         ),
         labelLarge: TextStyle(
+          fontFamily: arabicFontFamily,
+          fontFamilyFallback: arabicFontFallback,
           fontSize: scale.labelLarge,
           fontWeight: labelWeight,
           color: ivory,
         ),
       ),
       cardTheme: CardThemeData(
-        color: Colors.white.withOpacity(0.06),
+        color: Colors.white.withValues(alpha: 0.06),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(scale.radius),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: ButtonStyle(
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.focused)) {
+              return const BorderSide(color: gold, width: 2);
+            }
+            return BorderSide.none;
+          }),
+          elevation: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.focused) ? 8 : 1;
+          }),
+          shadowColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.focused)
+                ? gold.withValues(alpha: 0.55)
+                : Colors.transparent;
+          }),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.focused)) {
+              return const BorderSide(color: gold, width: 2);
+            }
+            return BorderSide.none;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.focused)) {
+              return gold.withValues(alpha: 0.20);
+            }
+            return Colors.transparent;
+          }),
         ),
       ),
     );

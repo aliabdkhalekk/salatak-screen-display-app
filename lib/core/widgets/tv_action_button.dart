@@ -76,13 +76,13 @@ class _TvActionButtonState extends State<TvActionButton> {
               ),
               decoration: BoxDecoration(
                 color: _focused
-                    ? theme.colorScheme.primary.withOpacity(0.20)
-                    : Colors.white.withOpacity(0.08),
+                    ? theme.colorScheme.primary.withValues(alpha: 0.20)
+                    : Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(radius),
                 border: Border.all(
                   color: _focused
                       ? theme.colorScheme.primary
-                      : Colors.white.withOpacity(0.10),
+                      : Colors.white.withValues(alpha: 0.10),
                   width: 2,
                 ),
               ),

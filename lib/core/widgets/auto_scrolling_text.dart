@@ -127,7 +127,7 @@ class _AutoScrollingTextState extends State<AutoScrollingText> {
       final returnDuration = Duration(
         milliseconds:
             ((((maxScroll / (widget.pixelsPerSecond * 2.6)) * 1000).round())
-                .clamp(900, 2200)) as int,
+                .clamp(900, 2200)),
       );
 
       try {

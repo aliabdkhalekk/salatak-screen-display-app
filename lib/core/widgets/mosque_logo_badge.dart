@@ -32,7 +32,7 @@ class MosqueLogoBadge extends StatelessWidget {
         boxShadow: showShadow
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.22),
+                  color: Colors.black.withValues(alpha: 0.22),
                   blurRadius: size * 0.22,
                   offset: Offset(0, size * 0.1),
                 ),

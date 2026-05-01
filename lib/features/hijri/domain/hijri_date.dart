@@ -41,6 +41,15 @@ class HijriSyncSnapshot {
     required this.year,
   });
 
+  factory HijriSyncSnapshot.fromJson(Map<String, dynamic> json) {
+    return HijriSyncSnapshot(
+      gregorianIsoDate: json['gregorianIsoDate'] as String,
+      day: json['day'] as int,
+      month: json['month'] as int,
+      year: json['year'] as int,
+    );
+  }
+
   final String gregorianIsoDate;
   final int day;
   final int month;
@@ -53,14 +62,5 @@ class HijriSyncSnapshot {
       'month': month,
       'year': year,
     };
-  }
-
-  factory HijriSyncSnapshot.fromJson(Map<String, dynamic> json) {
-    return HijriSyncSnapshot(
-      gregorianIsoDate: json['gregorianIsoDate'] as String,
-      day: json['day'] as int,
-      month: json['month'] as int,
-      year: json['year'] as int,
-    );
   }
 }

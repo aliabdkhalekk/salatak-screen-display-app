@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/layout/tv_screen_profile.dart';
 import 'core/theme/app_theme.dart';
 import 'features/dashboard/presentation/dashboard_screen.dart';
 import 'features/settings/application/settings_controller.dart';
@@ -17,7 +16,7 @@ class SalatakSmartDisplayApp extends ConsumerWidget {
     final settings = ref.watch(settingsControllerProvider);
 
     return MaterialApp(
-      title: 'Salatak Smart Display',
+      title: 'Salatk Screen',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ar'),
       supportedLocales: const [
@@ -30,10 +29,11 @@ class SalatakSmartDisplayApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       theme: AppTheme.build(
-        profile: TvScreenProfile.inch55,
+        profile: settings.screenProfile,
         uiScale: settings.uiScalePercent / 100,
         fontScale: settings.displayFontSize.scaleFactor,
         boldText: settings.displayFontWeight == DisplayFontWeightOption.bold,
+        arabicFontFamily: settings.arabicFontStyle.fontFamily,
       ),
       home: const _PreviewShell(
         child: Directionality(
@@ -68,10 +68,12 @@ class _PreviewShell extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withValues(alpha: 0.4),
                       blurRadius: 36,
                       offset: const Offset(0, 24),
                     ),
