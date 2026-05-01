@@ -3,14 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_cities.dart';
 import '../../../core/layout/app_layout.dart';
-import '../../../core/layout/tv_screen_profile.dart';
 import '../../../core/layout/tv_viewport_frame.dart';
 import '../../../core/widgets/ensure_visible_on_focus.dart';
 import '../../../core/widgets/responsive_screen_header.dart';
 import '../../../core/widgets/section_card.dart';
 import '../../../core/widgets/tv_action_button.dart';
 import '../../dashboard/application/dashboard_controller.dart';
-import '../../nawawi/presentation/nawawi_library_screen.dart';
 import '../application/settings_controller.dart';
 import '../domain/app_settings.dart';
 
@@ -25,21 +23,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _syncing = false;
   final ScrollController _scrollController = ScrollController();
 
-  static const List<int> _windowMinuteOptions = <int>[
-    5,
-    10,
-    15,
-    20,
-    25,
-    30,
-    35,
-    40,
-    45,
-    50,
-    55,
-    60,
-  ];
-
   static const List<int> _hijriOffsetOptions = <int>[-2, -1, 0, 1, 2];
 
   @override
@@ -51,7 +34,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsControllerProvider);
-    final dashboardState = ref.watch(dashboardControllerProvider);
     final theme = Theme.of(context);
     final pagePadding = AppLayout.pagePadding(context);
     final sectionGap = AppLayout.gap(
@@ -66,11 +48,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       medium: 12,
       expanded: 14,
     );
-    final now = dashboardState.now;
-    final effectiveContentMode = settings.effectiveContentSelectionMode(now);
-    final selectedContentTitle =
-        settings.activeSelectedContentTitle(now) ?? 'لا يوجد محتوى محدد';
-    final hasStoredSelection = settings.hasStoredContentSelection;
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -102,95 +79,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ResponsiveScreenHeader(
                           title: 'الإعدادات',
                           description:
-                              'إعدادات المدينة، الحساب، العرض التلفازي، الخط، التمرير، ونوافذ المحتوى حول الصلاة.',
+                              'ضبط مواقيت الصلاة، مراحل العرض، حجم الخط، وتدرج الواجهة.',
                           trailing: TvActionButton(
                             label: 'عودة',
                             icon: Icons.arrow_back_rounded,
                             autofocus: true,
                             onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ),
-                        SizedBox(height: sectionGap),
-                        _focusAware(
-                          _SettingsSection(
-                            title: 'التحكم في المحتوى المعروض',
-                            children: [
-                              _SettingsValueRow(
-                                label: 'الوضع الحالي',
-                                value: effectiveContentMode.labelArabic,
-                              ),
-                              SizedBox(height: fieldGap),
-                              _SettingsValueRow(
-                                label: 'المحتوى المحدد',
-                                value: selectedContentTitle,
-                              ),
-                              SizedBox(height: fieldGap),
-                              Text(
-                                'يمكنك اختيار حديث أو ذكر من المكتبة لعرضه اليوم فقط أو تثبيته على الشاشة حتى تغييره.',
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  fontSize: AppLayout.fluid(
-                                    context,
-                                    min: 20,
-                                    max: 24,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: fieldGap),
-                              Wrap(
-                                spacing: fieldGap,
-                                runSpacing: fieldGap,
-                                children: [
-                                  FilledButton.icon(
-                                    onPressed:
-                                        dashboardState.libraryItems.isEmpty
-                                            ? null
-                                            : () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute<void>(
-                                                    builder: (_) =>
-                                                        NawawiLibraryScreen(
-                                                      items: dashboardState
-                                                          .libraryItems,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                    icon: const Icon(Icons.menu_book_rounded),
-                                    label: const Text('اختيار من المكتبة'),
-                                  ),
-                                  OutlinedButton.icon(
-                                    onPressed: effectiveContentMode ==
-                                            ContentSelectionMode.auto
-                                        ? null
-                                        : () {
-                                            ref
-                                                .read(
-                                                  settingsControllerProvider
-                                                      .notifier,
-                                                )
-                                                .clearManualContentSelection();
-                                          },
-                                    icon:
-                                        const Icon(Icons.auto_awesome_rounded),
-                                    label: const Text('الوضع التلقائي'),
-                                  ),
-                                  OutlinedButton.icon(
-                                    onPressed: hasStoredSelection
-                                        ? () {
-                                            ref
-                                                .read(
-                                                  settingsControllerProvider
-                                                      .notifier,
-                                                )
-                                                .clearManualContentSelection();
-                                          }
-                                        : null,
-                                    icon: const Icon(Icons.close_rounded),
-                                    label: const Text('مسح التحديد'),
-                                  ),
-                                ],
-                              ),
-                            ],
                           ),
                         ),
                         SizedBox(height: sectionGap),
@@ -211,13 +105,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     )
                                     .toList(),
                                 onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updateCity(value);
+                                  if (value == null) {
+                                    return;
                                   }
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateCity(value);
                                 },
                               ),
                               SizedBox(height: sectionGap),
@@ -235,191 +128,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     )
                                     .toList(),
                                 onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updatePrayerMethod(value);
+                                  if (value == null) {
+                                    return;
                                   }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: sectionGap),
-                        _focusAware(
-                          _SettingsSection(
-                            title: 'ملف شاشة التلفاز',
-                            children: [
-                              _FieldLabel(text: 'مقاس الشاشة المستهدف'),
-                              SizedBox(height: fieldGap),
-                              _SettingsDropdown<TvScreenProfile>(
-                                value: settings.tvScreenProfile,
-                                items: TvScreenProfile.values
-                                    .map(
-                                      (profile) =>
-                                          DropdownMenuItem<TvScreenProfile>(
-                                        value: profile,
-                                        child: Text(profile.labelArabic),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updateTvScreenProfile(value);
-                                  }
-                                },
-                              ),
-                              SizedBox(height: fieldGap),
-                              _SettingsValueRow(
-                                label: 'الملف الحالي',
-                                value: settings.tvScreenProfile.previewLabel,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: sectionGap),
-                        _focusAware(
-                          _SettingsSection(
-                            title: 'الخط والقراءة',
-                            children: [
-                              _FieldLabel(text: 'حجم الخط'),
-                              SizedBox(height: fieldGap),
-                              _SettingsDropdown<DisplayFontSizeOption>(
-                                value: settings.displayFontSize,
-                                items: DisplayFontSizeOption.values
-                                    .map(
-                                      (option) => DropdownMenuItem<
-                                          DisplayFontSizeOption>(
-                                        value: option,
-                                        child: Text(option.labelArabic),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updateDisplayFontSize(value);
-                                  }
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updatePrayerMethod(value);
                                 },
                               ),
                               SizedBox(height: sectionGap),
-                              _FieldLabel(text: 'سماكة الخط'),
-                              SizedBox(height: fieldGap),
-                              _SettingsDropdown<DisplayFontWeightOption>(
-                                value: settings.displayFontWeight,
-                                items: DisplayFontWeightOption.values
-                                    .map(
-                                      (option) => DropdownMenuItem<
-                                          DisplayFontWeightOption>(
-                                        value: option,
-                                        child: Text(option.labelArabic),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updateDisplayFontWeight(value);
-                                  }
-                                },
-                              ),
-                              SizedBox(height: sectionGap),
-                              _FieldLabel(text: 'سرعة تمرير النص'),
-                              SizedBox(height: fieldGap),
-                              _SettingsDropdown<AutoScrollSpeedOption>(
-                                value: settings.autoScrollSpeed,
-                                items: AutoScrollSpeedOption.values
-                                    .map(
-                                      (option) => DropdownMenuItem<
-                                          AutoScrollSpeedOption>(
-                                        value: option,
-                                        child: Text(option.labelArabic),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updateAutoScrollSpeed(value);
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: sectionGap),
-                        _focusAware(
-                          _SettingsSection(
-                            title: 'نوافذ محتوى الصلاة',
-                            children: [
-                              _FieldLabel(text: 'نافذة ما قبل الصلاة'),
-                              SizedBox(height: fieldGap),
-                              _SettingsDropdown<int>(
-                                value: settings.prePrayerWindowMinutes,
-                                items: _windowMinuteOptions
-                                    .map(
-                                      (minutes) => DropdownMenuItem<int>(
-                                        value: minutes,
-                                        child: Text('$minutes دقيقة'),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updatePrePrayerWindowMinutes(value);
-                                  }
-                                },
-                              ),
-                              SizedBox(height: sectionGap),
-                              _FieldLabel(text: 'نافذة ما بعد الصلاة'),
-                              SizedBox(height: fieldGap),
-                              _SettingsDropdown<int>(
-                                value: settings.postPrayerWindowMinutes,
-                                items: _windowMinuteOptions
-                                    .map(
-                                      (minutes) => DropdownMenuItem<int>(
-                                        value: minutes,
-                                        child: Text('$minutes دقيقة'),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updatePostPrayerWindowMinutes(value);
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: sectionGap),
-                        _focusAware(
-                          _SettingsSection(
-                            title: 'التاريخ والمحتوى',
-                            children: [
                               _FieldLabel(text: 'إزاحة التاريخ الهجري'),
                               SizedBox(height: fieldGap),
                               _SettingsDropdown<int>(
@@ -437,18 +154,176 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     )
                                     .toList(),
                                 onChanged: (value) {
-                                  if (value != null) {
-                                    ref
-                                        .read(
-                                          settingsControllerProvider.notifier,
-                                        )
-                                        .updateHijriOffset(value);
+                                  if (value == null) {
+                                    return;
                                   }
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateHijriOffset(value);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: sectionGap),
+                        _focusAware(
+                          _SettingsSection(
+                            title: 'توقيت المراحل',
+                            children: [
+                              _SettingsAdjustRow(
+                                label: 'تشغيل الشاشة قبل الأذان',
+                                value:
+                                    '${settings.prePrayerWindowMinutes} دقيقة',
+                                onDecrease: () => _updatePrePrayer(-1),
+                                onIncrease: () => _updatePrePrayer(1),
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsAdjustRow(
+                                label: 'مدة دعاء الدخول',
+                                value:
+                                    '${settings.entryDuaDurationMinutes} دقيقة',
+                                onDecrease: () => _updateEntryDuration(-1),
+                                onIncrease: () => _updateEntryDuration(1),
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsAdjustRow(
+                                label: 'مدة أذكار بعد الصلاة',
+                                value: '${settings.azkarDurationMinutes} دقيقة',
+                                onDecrease: () => _updateAzkarDuration(-1),
+                                onIncrease: () => _updateAzkarDuration(1),
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsAdjustRow(
+                                label: 'مدة دعاء الخروج',
+                                value:
+                                    '${settings.exitDuaDurationMinutes} دقيقة',
+                                onDecrease: () => _updateExitDuration(-1),
+                                onIncrease: () => _updateExitDuration(1),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: sectionGap),
+                        _focusAware(
+                          _SettingsSection(
+                            title: 'العرض والقراءة',
+                            children: [
+                              _SettingsAdjustRow(
+                                label: 'حجم الخط',
+                                value: settings.displayFontSize.labelArabic,
+                                onDecrease: () {
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .decreaseDisplayFontSize();
+                                },
+                                onIncrease: () {
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .increaseDisplayFontSize();
+                                },
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsAdjustRow(
+                                label: 'تدرج الواجهة',
+                                value: '${settings.uiScalePercent}%',
+                                onDecrease: () => _updateUiScale(-5),
+                                onIncrease: () => _updateUiScale(5),
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsAdjustRow(
+                                label: 'تكبير نص الذكر',
+                                value: '${settings.zikrTextScalePercent}%',
+                                onDecrease: () => _updateZikrScale(-5),
+                                onIncrease: () => _updateZikrScale(5),
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsAdjustRow(
+                                label: 'سطوع وضع السكون',
+                                value: '${settings.sleepBrightnessPercent}%',
+                                onDecrease: () => _updateSleepBrightness(-5),
+                                onIncrease: () => _updateSleepBrightness(5),
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsDropdown<DisplayFontWeightOption>(
+                                value: settings.displayFontWeight,
+                                items: DisplayFontWeightOption.values
+                                    .map(
+                                      (option) => DropdownMenuItem<
+                                          DisplayFontWeightOption>(
+                                        value: option,
+                                        child: Text(option.labelArabic),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (value) {
+                                  if (value == null) {
+                                    return;
+                                  }
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateDisplayFontWeight(value);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: sectionGap),
+                        _focusAware(
+                          _SettingsSection(
+                            title: 'سلوك التشغيل',
+                            children: [
+                              _SettingsSwitchRow(
+                                label: 'تشغيل وإطفاء الشاشة تلقائيًا',
+                                value: settings.autoScreenControlEnabled,
+                                onChanged: (value) {
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateAutoScreenControlEnabled(value);
+                                },
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsSwitchRow(
+                                label: 'تفعيل دعاء الدخول',
+                                value: settings.entryDuaEnabled,
+                                onChanged: (value) {
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateEntryDuaEnabled(value);
+                                },
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsSwitchRow(
+                                label: 'تفعيل أذكار بعد الصلاة',
+                                value: settings.afterPrayerAzkarEnabled,
+                                onChanged: (value) {
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateAfterPrayerAzkarEnabled(value);
+                                },
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsSwitchRow(
+                                label: 'تفعيل دعاء الخروج',
+                                value: settings.exitDuaEnabled,
+                                onChanged: (value) {
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateExitDuaEnabled(value);
+                                },
+                              ),
+                              SizedBox(height: fieldGap),
+                              _SettingsSwitchRow(
+                                label: 'وضع التحكم اليدوي',
+                                value: settings.manualOverrideMode,
+                                onChanged: (value) {
+                                  ref
+                                      .read(settingsControllerProvider.notifier)
+                                      .updateManualOverrideMode(value);
                                 },
                               ),
                               SizedBox(height: fieldGap),
                               Text(
-                                'خارج نوافذ الصلاة يعرض التطبيق الحديث اليومي، بينما يعرض يوم الجمعة محتوى الجمعة كل ثلاثين دقيقة.',
+                                'عند تفعيل التحكم اليدوي يتوقف الانتقال التلقائي حتى تعيده من هذه الصفحة.',
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   fontSize: AppLayout.fluid(
                                     context,
@@ -466,23 +341,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             title: 'المزامنة',
                             children: [
                               Text(
-                                'تعمل الشاشة دون اتصال كامل. عند توفر الإنترنت يمكن مزامنة التاريخ الهجري ومحاولة جلب أي حزمة محتوى بعيدة مفعلة.',
+                                'يجلب التطبيق مواقيت الصلاة من الشبكة ويحتفظ بنسخة محلية للعمل دون اتصال.',
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   fontSize: AppLayout.fluid(
                                     context,
                                     min: 20,
                                     max: 24,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: fieldGap),
-                              Text(
-                                'يفضل أن تكون منطقة الجهاز الزمنية مطابقة للمدينة المختارة لضمان دقة المواقيت.',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontSize: AppLayout.fluid(
-                                    context,
-                                    min: 18,
-                                    max: 22,
                                   ),
                                 ),
                               ),
@@ -543,6 +407,55 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
+  }
+
+  void _updatePrePrayer(int delta) {
+    final settings = ref.read(settingsControllerProvider);
+    ref
+        .read(settingsControllerProvider.notifier)
+        .updatePrePrayerWindowMinutes(settings.prePrayerWindowMinutes + delta);
+  }
+
+  void _updateEntryDuration(int delta) {
+    final settings = ref.read(settingsControllerProvider);
+    ref.read(settingsControllerProvider.notifier).updateEntryDuaDurationMinutes(
+          settings.entryDuaDurationMinutes + delta,
+        );
+  }
+
+  void _updateAzkarDuration(int delta) {
+    final settings = ref.read(settingsControllerProvider);
+    ref.read(settingsControllerProvider.notifier).updateAzkarDurationMinutes(
+          settings.azkarDurationMinutes + delta,
+        );
+  }
+
+  void _updateExitDuration(int delta) {
+    final settings = ref.read(settingsControllerProvider);
+    ref.read(settingsControllerProvider.notifier).updateExitDuaDurationMinutes(
+          settings.exitDuaDurationMinutes + delta,
+        );
+  }
+
+  void _updateUiScale(int delta) {
+    final settings = ref.read(settingsControllerProvider);
+    ref
+        .read(settingsControllerProvider.notifier)
+        .updateUiScalePercent(settings.uiScalePercent + delta);
+  }
+
+  void _updateZikrScale(int delta) {
+    final settings = ref.read(settingsControllerProvider);
+    ref
+        .read(settingsControllerProvider.notifier)
+        .updateZikrTextScalePercent(settings.zikrTextScalePercent + delta);
+  }
+
+  void _updateSleepBrightness(int delta) {
+    final settings = ref.read(settingsControllerProvider);
+    ref.read(settingsControllerProvider.notifier).updateSleepBrightnessPercent(
+          settings.sleepBrightnessPercent + delta,
+        );
   }
 }
 
@@ -648,14 +561,111 @@ class _SettingsDropdown<T> extends StatelessWidget {
   }
 }
 
-class _SettingsValueRow extends StatelessWidget {
-  const _SettingsValueRow({
+class _SettingsAdjustRow extends StatelessWidget {
+  const _SettingsAdjustRow({
     required this.label,
     required this.value,
+    required this.onDecrease,
+    required this.onIncrease,
   });
 
   final String label;
   final String value;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+
+  @override
+  Widget build(BuildContext context) {
+    final gap = AppLayout.gap(context, compact: 10, medium: 12, expanded: 14);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(AppLayout.radius(context) * 0.56),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppLayout.cardPadding(context) * 0.58,
+          vertical: AppLayout.cardPadding(context) * 0.42,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: AppLayout.fluid(context, min: 21, max: 26),
+                    ),
+              ),
+            ),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: AppLayout.fluid(context, min: 22, max: 28),
+                    color: const Color(0xFFD8BE74),
+                  ),
+            ),
+            SizedBox(width: gap),
+            _AdjustButton(
+              icon: Icons.remove_rounded,
+              onPressed: onDecrease,
+            ),
+            SizedBox(width: gap * 0.6),
+            _AdjustButton(
+              icon: Icons.add_rounded,
+              onPressed: onIncrease,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AdjustButton extends StatelessWidget {
+  const _AdjustButton({
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = AppLayout.fluid(context, min: 42, max: 50);
+
+    return SizedBox.square(
+      dimension: size,
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon),
+        iconSize: AppLayout.fluid(context, min: 24, max: 30),
+        style: IconButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.08),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              AppLayout.radius(context) * 0.44,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsSwitchRow extends StatelessWidget {
+  const _SettingsSwitchRow({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -667,32 +677,23 @@ class _SettingsValueRow extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: AppLayout.cardPadding(context) * 0.72,
-          vertical: AppLayout.cardPadding(context) * 0.58,
+          horizontal: AppLayout.cardPadding(context) * 0.58,
+          vertical: AppLayout.cardPadding(context) * 0.36,
         ),
         child: Row(
           children: [
             Expanded(
               child: Text(
                 label,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontSize: AppLayout.fluid(context, min: 20, max: 24),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: AppLayout.fluid(context, min: 21, max: 26),
                     ),
               ),
             ),
-            SizedBox(
-                width: AppLayout.gap(context,
-                    compact: 10, medium: 12, expanded: 14)),
-            Flexible(
-              child: Text(
-                value,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.end,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: AppLayout.fluid(context, min: 22, max: 26),
-                    ),
-              ),
+            Switch(
+              value: value,
+              activeColor: const Color(0xFFD8BE74),
+              onChanged: onChanged,
             ),
           ],
         ),

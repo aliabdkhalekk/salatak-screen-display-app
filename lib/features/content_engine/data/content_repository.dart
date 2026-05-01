@@ -59,7 +59,8 @@ class ContentRepository {
     }
 
     try {
-      final response = await http.get(Uri.parse(AppConfig.remoteContentBundleUrl));
+      final response =
+          await http.get(Uri.parse(AppConfig.remoteContentBundleUrl));
       if (response.statusCode != 200) {
         return 'تعذرت مزامنة المحتوى البعيد.';
       }

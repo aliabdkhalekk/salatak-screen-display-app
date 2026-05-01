@@ -3,7 +3,6 @@ import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../../../core/constants/app_cities.dart';
 import '../../../../core/layout/app_layout.dart';
-import '../../../../core/layout/tv_screen_profile.dart';
 import '../../../../core/widgets/mosque_logo_badge.dart';
 import '../../../../core/widgets/section_card.dart';
 import '../../../../core/widgets/tv_action_button.dart';
@@ -17,13 +16,11 @@ class DashboardHeader extends StatelessWidget {
     required this.state,
     required this.settings,
     required this.onOpenSettings,
-    required this.onOpenNawawi,
   });
 
   final DashboardState state;
   final AppSettings settings;
   final VoidCallback onOpenSettings;
-  final VoidCallback onOpenNawawi;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +49,6 @@ class DashboardHeader extends StatelessWidget {
                 _LeftHeaderSection(
                   settings: settings,
                   onOpenSettings: onOpenSettings,
-                  onOpenNawawi: onOpenNawawi,
                 ),
                 SizedBox(height: sectionGap),
                 _RightHeaderSection(
@@ -74,7 +70,6 @@ class DashboardHeader extends StatelessWidget {
                 child: _LeftHeaderSection(
                   settings: settings,
                   onOpenSettings: onOpenSettings,
-                  onOpenNawawi: onOpenNawawi,
                 ),
               ),
               SizedBox(width: sectionGap),
@@ -98,12 +93,10 @@ class _LeftHeaderSection extends StatelessWidget {
   const _LeftHeaderSection({
     required this.settings,
     required this.onOpenSettings,
-    required this.onOpenNawawi,
   });
 
   final AppSettings settings;
   final VoidCallback onOpenSettings;
-  final VoidCallback onOpenNawawi;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +115,6 @@ class _LeftHeaderSection extends StatelessWidget {
         ),
         _ActionStrip(
           onOpenSettings: onOpenSettings,
-          onOpenNawawi: onOpenNawawi,
         ),
       ],
     );
@@ -157,7 +149,6 @@ class _RightHeaderSection extends StatelessWidget {
           _MetaRow(
             cityName: cityName,
             settings: settings,
-            isFriday: state.isFriday,
           ),
         ],
       );
@@ -184,7 +175,6 @@ class _RightHeaderSection extends StatelessWidget {
         _MetaRow(
           cityName: cityName,
           settings: settings,
-          isFriday: state.isFriday,
         ),
       ],
     );
@@ -239,7 +229,7 @@ class _BrandBlock extends StatelessWidget {
               ),
               SizedBox(height: metaGap),
               Text(
-                settings.tvScreenProfile.previewLabel,
+                'تشغيل تلقائي حسب مواقيت الصلاة',
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontSize: AppLayout.fluid(context, min: 16, max: 20),
                   color: const Color(0xFFD8BE74),
@@ -265,7 +255,8 @@ class _ClockBlock extends StatelessWidget {
     final formattedTime = _formatArabicClock(state.now);
     final theme = Theme.of(context);
     final metaGap = AppLayout.gap(context, compact: 2, medium: 3, expanded: 4);
-    final wrapGap = AppLayout.gap(context, compact: 8, medium: 10, expanded: 12);
+    final wrapGap =
+        AppLayout.gap(context, compact: 8, medium: 10, expanded: 12);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -412,15 +403,12 @@ class _NextPrayerBlock extends StatelessWidget {
 class _ActionStrip extends StatelessWidget {
   const _ActionStrip({
     required this.onOpenSettings,
-    required this.onOpenNawawi,
   });
 
   final VoidCallback onOpenSettings;
-  final VoidCallback onOpenNawawi;
 
   @override
   Widget build(BuildContext context) {
-    final gap = AppLayout.gap(context, compact: 8, medium: 10, expanded: 12);
     final buttonWidth = AppLayout.fluid(context, min: 156, max: 184);
 
     return Align(
@@ -438,13 +426,6 @@ class _ActionStrip extends StatelessWidget {
               compact: true,
               onPressed: onOpenSettings,
             ),
-            SizedBox(height: gap),
-            TvActionButton(
-              label: 'المكتبة',
-              icon: Icons.menu_book_rounded,
-              compact: true,
-              onPressed: onOpenNawawi,
-            ),
           ],
         ),
       ),
@@ -456,12 +437,10 @@ class _MetaRow extends StatelessWidget {
   const _MetaRow({
     required this.cityName,
     required this.settings,
-    required this.isFriday,
   });
 
   final String cityName;
   final AppSettings settings;
-  final bool isFriday;
 
   @override
   Widget build(BuildContext context) {
@@ -477,10 +456,9 @@ class _MetaRow extends StatelessWidget {
           value: settings.prayerMethod.labelArabic,
         ),
         _InfoChip(
-          label: 'مقاس الشاشة',
-          value: settings.tvScreenProfile.labelArabic,
+          label: 'تدرج الواجهة',
+          value: '${settings.uiScalePercent}%',
         ),
-        if (isFriday) const _InfoChip(label: 'الوضع', value: 'الجمعة'),
       ],
     );
   }

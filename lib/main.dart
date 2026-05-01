@@ -8,4 +8,3 @@ Future<void> main() async {
   await AppBootstrap.ensureInitialized();
   runApp(const ProviderScope(child: SalatakSmartDisplayApp()));
 }
-

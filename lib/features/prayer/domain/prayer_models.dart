@@ -58,4 +58,3 @@ class PrayerDayInfo {
     return todayEntries.firstWhere((entry) => entry.name == prayer).time;
   }
 }
-

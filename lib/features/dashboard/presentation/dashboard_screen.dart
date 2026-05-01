@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/layout/app_layout.dart';
 import '../../../core/layout/tv_viewport_frame.dart';
-import '../../nawawi/presentation/nawawi_library_screen.dart';
+import '../../automation/presentation/prayer_flow_overlay.dart';
 import '../../settings/application/settings_controller.dart';
 import '../../settings/presentation/settings_screen.dart';
 import '../application/dashboard_controller.dart';
 import '../domain/dashboard_state.dart';
-import 'widgets/content_panel.dart';
 import 'widgets/dashboard_header.dart';
 import 'widgets/prayer_times_panel.dart';
 
@@ -19,6 +18,13 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardState = ref.watch(dashboardControllerProvider);
     final settings = ref.watch(settingsControllerProvider);
+    void openSettings() {
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const SettingsScreen(),
+        ),
+      );
+    }
 
     return FocusTraversalGroup(
       child: Scaffold(
@@ -56,12 +62,6 @@ class DashboardScreen extends ConsumerWidget {
                 child: Builder(
                   builder: (context) {
                     final pagePadding = AppLayout.pagePadding(context);
-                    final panelGap = AppLayout.gap(
-                      context,
-                      compact: 16,
-                      medium: 20,
-                      expanded: 24,
-                    );
                     final headerGap = AppLayout.gap(
                       context,
                       compact: 8,
@@ -84,22 +84,7 @@ class DashboardScreen extends ConsumerWidget {
                             DashboardHeader(
                               state: dashboardState,
                               settings: settings,
-                              onOpenSettings: () {
-                                Navigator.of(context, rootNavigator: true).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => const SettingsScreen(),
-                                  ),
-                                );
-                              },
-                              onOpenNawawi: () {
-                                Navigator.of(context, rootNavigator: true).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => NawawiLibraryScreen(
-                                      items: dashboardState.libraryItems,
-                                    ),
-                                  ),
-                                );
-                              },
+                              onOpenSettings: openSettings,
                             ),
                             SizedBox(height: headerGap),
                             Expanded(
@@ -107,7 +92,6 @@ class DashboardScreen extends ConsumerWidget {
                                 builder: (context, constraints) {
                                   return _DashboardPanels(
                                     state: dashboardState,
-                                    gap: panelGap,
                                     maxWidth: constraints.maxWidth,
                                     maxHeight: constraints.maxHeight,
                                   );
@@ -121,6 +105,14 @@ class DashboardScreen extends ConsumerWidget {
                   },
                 ),
               ),
+              PrayerFlowOverlay(
+                snapshot: dashboardState.automation,
+                settings: settings,
+                now: dashboardState.now,
+                hijriLabel: dashboardState.hijriDate?.formatted,
+                prayerDay: dashboardState.prayerDay,
+                onOpenSettings: openSettings,
+              ),
             ],
           ),
         ),
@@ -132,58 +124,28 @@ class DashboardScreen extends ConsumerWidget {
 class _DashboardPanels extends StatelessWidget {
   const _DashboardPanels({
     required this.state,
-    required this.gap,
     required this.maxWidth,
     required this.maxHeight,
   });
 
   final DashboardState state;
-  final double gap;
   final double maxWidth;
   final double maxHeight;
 
   @override
   Widget build(BuildContext context) {
-    final stackedLayout = maxWidth < 960 || (maxWidth < 1160 && maxHeight < 760);
-    final prayerFlex = AppLayout.sidePanelFlex(context) + 1;
-    final contentFlex = AppLayout.contentPanelFlex(context) + 1;
     final viewportScale = AppLayout.visualScale(context);
+    final widthFactor = maxWidth < 900 ? 1.0 : 0.72;
+    final maxPanelHeight = maxHeight * 0.98;
 
-    if (stackedLayout) {
-      final compact = maxWidth < 560;
-      final prayersHeight = (compact ? 460.0 : 520.0) * viewportScale;
-      final contentHeight = (compact ? 560.0 : 660.0) * viewportScale;
-
-      return ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          SizedBox(
-            height: prayersHeight,
-            child: PrayerTimesPanel(state: state),
-          ),
-          SizedBox(height: gap),
-          SizedBox(
-            height: contentHeight,
-            child: ContentPanel(state: state),
-          ),
-        ],
-      );
-    }
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      textDirection: TextDirection.ltr,
-      children: [
-        Expanded(
-          flex: prayerFlex,
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: widthFactor,
+        child: SizedBox(
+          height: maxPanelHeight * viewportScale,
           child: PrayerTimesPanel(state: state),
         ),
-        SizedBox(width: gap),
-        Expanded(
-          flex: contentFlex,
-          child: ContentPanel(state: state),
-        ),
-      ],
+      ),
     );
   }
 }

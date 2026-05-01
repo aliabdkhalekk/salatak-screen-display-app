@@ -228,8 +228,7 @@ class TvDisplayScale extends ThemeExtension<TvDisplayScale> {
       buttonIconSize: lerpDouble(buttonIconSize, other.buttonIconSize, t)!,
       dashboardMaxWidth:
           lerpDouble(dashboardMaxWidth, other.dashboardMaxWidth, t)!,
-      contentPanelFlex:
-          t < 0.5 ? contentPanelFlex : other.contentPanelFlex,
+      contentPanelFlex: t < 0.5 ? contentPanelFlex : other.contentPanelFlex,
       sidePanelFlex: t < 0.5 ? sidePanelFlex : other.sidePanelFlex,
     );
   }

@@ -53,6 +53,38 @@
     "displayContexts": ["after_prayer"],
     "type": "adhkar",
     "order": 5
+  },
+  {
+    "id": "dhikr_after_prayer_5",
+    "title": "تمام التهليل",
+    "text": "لا إله إلا الله مخلصين له الدين ولو كره الكافرون. اللهم لا مانع لما أعطيت، ولا معطي لما منعت، ولا ينفع ذا الجد منك الجد.",
+    "source": "رواه مسلم ومتفق عليه",
+    "tags": ["adhkar", "after_prayer"],
+    "priority": 7,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 6
+  },
+  {
+    "id": "dhikr_after_prayer_6",
+    "title": "الإعانة على الذكر",
+    "text": "اللهم أعني على ذكرك وشكرك وحسن عبادتك.",
+    "source": "رواه أبو داود والنسائي",
+    "tags": ["adhkar", "after_prayer"],
+    "priority": 7,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 7
+  },
+  {
+    "id": "dhikr_after_prayer_7",
+    "title": "المعوذات بعد الصلاة",
+    "text": "تقرأ سورة الإخلاص، وسورة الفلق، وسورة الناس بعد كل صلاة.",
+    "source": "رواه أبو داود والترمذي والنسائي",
+    "tags": ["adhkar", "after_prayer"],
+    "priority": 6,
+    "displayContexts": ["after_prayer"],
+    "type": "adhkar",
+    "order": 8
   }
 ]
-

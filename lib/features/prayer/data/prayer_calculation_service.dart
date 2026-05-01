@@ -44,7 +44,9 @@ class PrayerCalculationService {
   final Map<String, DateTime> _lastFetchAttempts = <String, DateTime>{};
 
   static const Duration _remoteRetryCooldown = Duration(minutes: 30);
-  static const int calendarCacheSchemaVersion = 2;
+  static const Duration _calendarRefreshInterval = Duration(hours: 23);
+  static const int _maxRemoteAttempts = 3;
+  static const int calendarCacheSchemaVersion = 3;
 
   PrayerDayInfo buildPrayerDay({
     required DateTime now,
@@ -127,7 +129,9 @@ class PrayerCalculationService {
       settings: settings,
     );
 
-    if (_loadCachedMonth(cacheKey, city) != null) {
+    final cachedMonth = _loadCachedMonth(cacheKey, city);
+    if (cachedMonth != null &&
+        !cachedMonth.shouldRefresh(DateTime.now().toUtc())) {
       return false;
     }
 
@@ -245,6 +249,25 @@ class PrayerCalculationService {
     required AppCity city,
     required AppSettings settings,
   }) async {
+    for (var attempt = 0; attempt < _maxRemoteAttempts; attempt += 1) {
+      final calendar = await _fetchMonthFromApiOnce(
+        month: month,
+        city: city,
+        settings: settings,
+      );
+      if (calendar != null) {
+        return calendar;
+      }
+    }
+
+    return null;
+  }
+
+  Future<_MonthlyPrayerCalendar?> _fetchMonthFromApiOnce({
+    required DateTime month,
+    required AppCity city,
+    required AppSettings settings,
+  }) async {
     final uri = Uri.https('api.aladhan.com', '/v1/calendar', <String, String>{
       'latitude': city.latitude.toString(),
       'longitude': city.longitude.toString(),
@@ -253,7 +276,9 @@ class PrayerCalculationService {
       'year': month.year.toString(),
     });
 
-    final response = await _httpClient.get(uri);
+    final response = await _httpClient.get(uri).timeout(
+          const Duration(seconds: 8),
+        );
     if (response.statusCode != 200) {
       return null;
     }
@@ -322,6 +347,7 @@ class PrayerCalculationService {
       year: month.year,
       month: month.month,
       timeZoneId: timeZoneId ?? city.timeZoneId,
+      fetchedAtUtcIso: DateTime.now().toUtc().toIso8601String(),
       entries: entries,
     );
   }
@@ -417,6 +443,7 @@ class _MonthlyPrayerCalendar {
     required this.year,
     required this.month,
     required this.timeZoneId,
+    required this.fetchedAtUtcIso,
     required this.entries,
   });
 
@@ -428,6 +455,7 @@ class _MonthlyPrayerCalendar {
       year: (json['year'] as num?)?.toInt() ?? 0,
       month: (json['month'] as num?)?.toInt() ?? 0,
       timeZoneId: (json['timeZoneId'] as String?) ?? '',
+      fetchedAtUtcIso: (json['fetchedAtUtcIso'] as String?) ?? '',
       entries: entriesPayload.map(
         (key, value) => MapEntry(
           key,
@@ -441,6 +469,7 @@ class _MonthlyPrayerCalendar {
   final int year;
   final int month;
   final String timeZoneId;
+  final String fetchedAtUtcIso;
   final Map<String, _PrayerDayTimes> entries;
 
   _PrayerDayTimes? entryFor(DateTime date) {
@@ -463,12 +492,27 @@ class _MonthlyPrayerCalendar {
     return entries.values.every((entry) => entry.matchesLocation(location));
   }
 
+  bool shouldRefresh(DateTime nowUtc) {
+    if (fetchedAtUtcIso.isEmpty) {
+      return true;
+    }
+
+    final fetchedAt = DateTime.tryParse(fetchedAtUtcIso)?.toUtc();
+    if (fetchedAt == null) {
+      return true;
+    }
+
+    return nowUtc.difference(fetchedAt) >
+        PrayerCalculationService._calendarRefreshInterval;
+  }
+
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'schemaVersion': schemaVersion,
       'year': year,
       'month': month,
       'timeZoneId': timeZoneId,
+      'fetchedAtUtcIso': fetchedAtUtcIso,
       'entries': entries.map(
         (key, value) => MapEntry(key, value.toJson()),
       ),

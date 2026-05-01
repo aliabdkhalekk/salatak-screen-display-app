@@ -9,4 +9,3 @@ abstract final class AppConfig {
   /// a JSON payload with keys matching the local content files.
   static const String remoteContentBundleUrl = '';
 }
-

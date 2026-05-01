@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/layout/tv_screen_profile.dart';
 import 'core/theme/app_theme.dart';
 import 'features/dashboard/presentation/dashboard_screen.dart';
 import 'features/settings/application/settings_controller.dart';
@@ -29,7 +30,8 @@ class SalatakSmartDisplayApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       theme: AppTheme.build(
-        profile: settings.tvScreenProfile,
+        profile: TvScreenProfile.inch55,
+        uiScale: settings.uiScalePercent / 100,
         fontScale: settings.displayFontSize.scaleFactor,
         boldText: settings.displayFontWeight == DisplayFontWeightOption.bold,
       ),

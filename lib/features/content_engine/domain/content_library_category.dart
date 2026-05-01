@@ -32,21 +32,22 @@ class ContentLibraryCategory {
   }
 
   static List<ContentLibraryCategory> build(List<ContentItem> items) {
-    final availableItems = items.where((item) => item.text.trim().isNotEmpty).toList()
-      ..sort((a, b) {
-        final orderSort = a.libraryCollectionSortOrder
-            .compareTo(b.libraryCollectionSortOrder);
-        if (orderSort != 0) {
-          return orderSort;
-        }
+    final availableItems =
+        items.where((item) => item.text.trim().isNotEmpty).toList()
+          ..sort((a, b) {
+            final orderSort = a.libraryCollectionSortOrder
+                .compareTo(b.libraryCollectionSortOrder);
+            if (orderSort != 0) {
+              return orderSort;
+            }
 
-        final titleSort = a.title.compareTo(b.title);
-        if (titleSort != 0) {
-          return titleSort;
-        }
+            final titleSort = a.title.compareTo(b.title);
+            if (titleSort != 0) {
+              return titleSort;
+            }
 
-        return a.id.compareTo(b.id);
-      });
+            return a.id.compareTo(b.id);
+          });
 
     final grouped = <String, List<ContentItem>>{};
     for (final item in availableItems) {

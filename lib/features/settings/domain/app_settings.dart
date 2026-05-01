@@ -1,5 +1,3 @@
-import '../../../core/layout/tv_screen_profile.dart';
-
 enum PrayerMethodOption {
   egyptian,
   ummAlQura,
@@ -66,6 +64,19 @@ extension DisplayFontSizeOptionX on DisplayFontSizeOption {
     }
   }
 
+  DisplayFontSizeOption next() {
+    final index = DisplayFontSizeOption.values.indexOf(this);
+    final nextIndex =
+        (index + 1).clamp(0, DisplayFontSizeOption.values.length - 1);
+    return DisplayFontSizeOption.values[nextIndex];
+  }
+
+  DisplayFontSizeOption previous() {
+    final index = DisplayFontSizeOption.values.indexOf(this);
+    final previousIndex = (index - 1).clamp(0, index);
+    return DisplayFontSizeOption.values[previousIndex];
+  }
+
   static DisplayFontSizeOption fromStorage(String? value) {
     return DisplayFontSizeOption.values.firstWhere(
       (option) => option.name == value,
@@ -97,275 +108,116 @@ extension DisplayFontWeightOptionX on DisplayFontWeightOption {
   }
 }
 
-enum AutoScrollSpeedOption {
-  verySlow,
-  slow,
-  medium,
-  fast,
-}
-
-extension AutoScrollSpeedOptionX on AutoScrollSpeedOption {
-  String get labelArabic {
-    switch (this) {
-      case AutoScrollSpeedOption.verySlow:
-        return 'بطيء جدًا';
-      case AutoScrollSpeedOption.slow:
-        return 'بطيء';
-      case AutoScrollSpeedOption.medium:
-        return 'متوسط';
-      case AutoScrollSpeedOption.fast:
-        return 'سريع';
-    }
-  }
-
-  double get pixelsPerSecond {
-    switch (this) {
-      case AutoScrollSpeedOption.verySlow:
-        return 10;
-      case AutoScrollSpeedOption.slow:
-        return 14;
-      case AutoScrollSpeedOption.medium:
-        return 18;
-      case AutoScrollSpeedOption.fast:
-        return 24;
-    }
-  }
-
-  static AutoScrollSpeedOption fromStorage(String? value) {
-    return AutoScrollSpeedOption.values.firstWhere(
-      (option) => option.name == value,
-      orElse: () => AutoScrollSpeedOption.slow,
-    );
-  }
-}
-
-enum ContentSelectionMode {
-  auto,
-  selectedForToday,
-  pinned,
-}
-
-extension ContentSelectionModeX on ContentSelectionMode {
-  String get labelArabic {
-    switch (this) {
-      case ContentSelectionMode.auto:
-        return 'تلقائي';
-      case ContentSelectionMode.selectedForToday:
-        return 'عرض اليوم';
-      case ContentSelectionMode.pinned:
-        return 'محتوى مثبت';
-    }
-  }
-
-  static ContentSelectionMode fromStorage(String? value) {
-    return ContentSelectionMode.values.firstWhere(
-      (mode) => mode.name == value,
-      orElse: () => ContentSelectionMode.auto,
-    );
-  }
-}
-
 class AppSettings {
   const AppSettings({
     required this.cityId,
     required this.prayerMethod,
     required this.hijriOffset,
-    required this.tvScreenProfile,
     required this.displayFontSize,
     required this.displayFontWeight,
-    required this.autoScrollSpeed,
-    required this.contentSelectionMode,
-    required this.selectedContentId,
-    required this.selectedContentTitle,
-    required this.selectedContentDateKey,
     required this.prePrayerWindowMinutes,
-    required this.postPrayerWindowMinutes,
+    required this.entryDuaDurationMinutes,
+    required this.azkarDurationMinutes,
+    required this.exitDuaDurationMinutes,
+    required this.uiScalePercent,
+    required this.zikrTextScalePercent,
+    required this.sleepBrightnessPercent,
+    required this.autoScreenControlEnabled,
+    required this.entryDuaEnabled,
+    required this.afterPrayerAzkarEnabled,
+    required this.exitDuaEnabled,
+    required this.manualOverrideMode,
   });
-
-  final String cityId;
-  final PrayerMethodOption prayerMethod;
-  final int hijriOffset;
-  final TvScreenProfile tvScreenProfile;
-  final DisplayFontSizeOption displayFontSize;
-  final DisplayFontWeightOption displayFontWeight;
-  final AutoScrollSpeedOption autoScrollSpeed;
-  final ContentSelectionMode contentSelectionMode;
-  final String? selectedContentId;
-  final String? selectedContentTitle;
-  final String? selectedContentDateKey;
-  final int prePrayerWindowMinutes;
-  final int postPrayerWindowMinutes;
 
   factory AppSettings.defaults() {
     return const AppSettings(
       cityId: 'cairo',
       prayerMethod: PrayerMethodOption.egyptian,
       hijriOffset: 0,
-      tvScreenProfile: TvScreenProfile.inch55,
       displayFontSize: DisplayFontSizeOption.medium,
       displayFontWeight: DisplayFontWeightOption.normal,
-      autoScrollSpeed: AutoScrollSpeedOption.slow,
-      contentSelectionMode: ContentSelectionMode.auto,
-      selectedContentId: null,
-      selectedContentTitle: null,
-      selectedContentDateKey: null,
-      prePrayerWindowMinutes: 20,
-      postPrayerWindowMinutes: 30,
+      prePrayerWindowMinutes: 10,
+      entryDuaDurationMinutes: 10,
+      azkarDurationMinutes: 20,
+      exitDuaDurationMinutes: 20,
+      uiScalePercent: 100,
+      zikrTextScalePercent: 100,
+      sleepBrightnessPercent: 5,
+      autoScreenControlEnabled: true,
+      entryDuaEnabled: true,
+      afterPrayerAzkarEnabled: true,
+      exitDuaEnabled: true,
+      manualOverrideMode: false,
     );
   }
+
+  final String cityId;
+  final PrayerMethodOption prayerMethod;
+  final int hijriOffset;
+  final DisplayFontSizeOption displayFontSize;
+  final DisplayFontWeightOption displayFontWeight;
+  final int prePrayerWindowMinutes;
+  final int entryDuaDurationMinutes;
+  final int azkarDurationMinutes;
+  final int exitDuaDurationMinutes;
+  final int uiScalePercent;
+  final int zikrTextScalePercent;
+  final int sleepBrightnessPercent;
+  final bool autoScreenControlEnabled;
+  final bool entryDuaEnabled;
+  final bool afterPrayerAzkarEnabled;
+  final bool exitDuaEnabled;
+  final bool manualOverrideMode;
+
+  int get azkarItemSeconds => 12;
 
   AppSettings copyWith({
     String? cityId,
     PrayerMethodOption? prayerMethod,
     int? hijriOffset,
-    TvScreenProfile? tvScreenProfile,
     DisplayFontSizeOption? displayFontSize,
     DisplayFontWeightOption? displayFontWeight,
-    AutoScrollSpeedOption? autoScrollSpeed,
-    ContentSelectionMode? contentSelectionMode,
-    String? selectedContentId,
-    String? selectedContentTitle,
-    String? selectedContentDateKey,
     int? prePrayerWindowMinutes,
-    int? postPrayerWindowMinutes,
+    int? entryDuaDurationMinutes,
+    int? azkarDurationMinutes,
+    int? exitDuaDurationMinutes,
+    int? uiScalePercent,
+    int? zikrTextScalePercent,
+    int? sleepBrightnessPercent,
+    bool? autoScreenControlEnabled,
+    bool? entryDuaEnabled,
+    bool? afterPrayerAzkarEnabled,
+    bool? exitDuaEnabled,
+    bool? manualOverrideMode,
   }) {
     return AppSettings(
       cityId: cityId ?? this.cityId,
       prayerMethod: prayerMethod ?? this.prayerMethod,
       hijriOffset: hijriOffset ?? this.hijriOffset,
-      tvScreenProfile: tvScreenProfile ?? this.tvScreenProfile,
       displayFontSize: displayFontSize ?? this.displayFontSize,
       displayFontWeight: displayFontWeight ?? this.displayFontWeight,
-      autoScrollSpeed: autoScrollSpeed ?? this.autoScrollSpeed,
-      contentSelectionMode: contentSelectionMode ?? this.contentSelectionMode,
-      selectedContentId: selectedContentId ?? this.selectedContentId,
-      selectedContentTitle: selectedContentTitle ?? this.selectedContentTitle,
-      selectedContentDateKey:
-          selectedContentDateKey ?? this.selectedContentDateKey,
       prePrayerWindowMinutes:
           prePrayerWindowMinutes ?? this.prePrayerWindowMinutes,
-      postPrayerWindowMinutes:
-          postPrayerWindowMinutes ?? this.postPrayerWindowMinutes,
-    );
-  }
-
-  bool get hasStoredContentSelection =>
-      (selectedContentId?.trim().isNotEmpty ?? false);
-
-  ContentSelectionMode effectiveContentSelectionMode(DateTime now) {
-    return effectiveContentSelectionModeForDayKey(dayKeyFrom(now));
-  }
-
-  ContentSelectionMode effectiveContentSelectionModeForDayKey(String dayKey) {
-    if (!hasStoredContentSelection) {
-      return ContentSelectionMode.auto;
-    }
-
-    if (contentSelectionMode == ContentSelectionMode.selectedForToday &&
-        selectedContentDateKey != dayKey) {
-      return ContentSelectionMode.auto;
-    }
-
-    return contentSelectionMode;
-  }
-
-  bool hasActiveManualContent(DateTime now) {
-    return hasActiveManualContentForDayKey(dayKeyFrom(now));
-  }
-
-  bool hasActiveManualContentForDayKey(String dayKey) {
-    return effectiveContentSelectionModeForDayKey(dayKey) !=
-            ContentSelectionMode.auto &&
-        hasStoredContentSelection;
-  }
-
-  String? activeSelectedContentId(DateTime now) {
-    return activeSelectedContentIdForDayKey(dayKeyFrom(now));
-  }
-
-  String? activeSelectedContentIdForDayKey(String dayKey) {
-    if (!hasActiveManualContentForDayKey(dayKey)) {
-      return null;
-    }
-    return selectedContentId;
-  }
-
-  String? activeSelectedContentTitle(DateTime now) {
-    return activeSelectedContentTitleForDayKey(dayKeyFrom(now));
-  }
-
-  String? activeSelectedContentTitleForDayKey(String dayKey) {
-    if (!hasActiveManualContentForDayKey(dayKey)) {
-      return null;
-    }
-    return selectedContentTitle;
-  }
-
-  AppSettings withAutomaticContentSelection() {
-    return AppSettings(
-      cityId: cityId,
-      prayerMethod: prayerMethod,
-      hijriOffset: hijriOffset,
-      tvScreenProfile: tvScreenProfile,
-      displayFontSize: displayFontSize,
-      displayFontWeight: displayFontWeight,
-      autoScrollSpeed: autoScrollSpeed,
-      contentSelectionMode: ContentSelectionMode.auto,
-      selectedContentId: null,
-      selectedContentTitle: null,
-      selectedContentDateKey: null,
-      prePrayerWindowMinutes: prePrayerWindowMinutes,
-      postPrayerWindowMinutes: postPrayerWindowMinutes,
-    );
-  }
-
-  AppSettings withSelectedContentForToday({
-    required String contentId,
-    required String title,
-    required DateTime now,
-  }) {
-    return AppSettings(
-      cityId: cityId,
-      prayerMethod: prayerMethod,
-      hijriOffset: hijriOffset,
-      tvScreenProfile: tvScreenProfile,
-      displayFontSize: displayFontSize,
-      displayFontWeight: displayFontWeight,
-      autoScrollSpeed: autoScrollSpeed,
-      contentSelectionMode: ContentSelectionMode.selectedForToday,
-      selectedContentId: contentId.trim(),
-      selectedContentTitle: title.trim(),
-      selectedContentDateKey: dayKeyFrom(now),
-      prePrayerWindowMinutes: prePrayerWindowMinutes,
-      postPrayerWindowMinutes: postPrayerWindowMinutes,
-    );
-  }
-
-  AppSettings withPinnedContentSelection({
-    required String contentId,
-    required String title,
-  }) {
-    return AppSettings(
-      cityId: cityId,
-      prayerMethod: prayerMethod,
-      hijriOffset: hijriOffset,
-      tvScreenProfile: tvScreenProfile,
-      displayFontSize: displayFontSize,
-      displayFontWeight: displayFontWeight,
-      autoScrollSpeed: autoScrollSpeed,
-      contentSelectionMode: ContentSelectionMode.pinned,
-      selectedContentId: contentId.trim(),
-      selectedContentTitle: title.trim(),
-      selectedContentDateKey: null,
-      prePrayerWindowMinutes: prePrayerWindowMinutes,
-      postPrayerWindowMinutes: postPrayerWindowMinutes,
+      entryDuaDurationMinutes:
+          entryDuaDurationMinutes ?? this.entryDuaDurationMinutes,
+      azkarDurationMinutes: azkarDurationMinutes ?? this.azkarDurationMinutes,
+      exitDuaDurationMinutes:
+          exitDuaDurationMinutes ?? this.exitDuaDurationMinutes,
+      uiScalePercent: uiScalePercent ?? this.uiScalePercent,
+      zikrTextScalePercent: zikrTextScalePercent ?? this.zikrTextScalePercent,
+      sleepBrightnessPercent:
+          sleepBrightnessPercent ?? this.sleepBrightnessPercent,
+      autoScreenControlEnabled:
+          autoScreenControlEnabled ?? this.autoScreenControlEnabled,
+      entryDuaEnabled: entryDuaEnabled ?? this.entryDuaEnabled,
+      afterPrayerAzkarEnabled:
+          afterPrayerAzkarEnabled ?? this.afterPrayerAzkarEnabled,
+      exitDuaEnabled: exitDuaEnabled ?? this.exitDuaEnabled,
+      manualOverrideMode: manualOverrideMode ?? this.manualOverrideMode,
     );
   }
 
   static String dayKeyFrom(DateTime date) {
-    // The caller must pass a value already expressed in the app's active
-    // timezone. "Today" changes with the selected timezone and DST rules, so
-    // manual hour shifting must not be used to build day keys.
     final year = date.year.toString().padLeft(4, '0');
     final month = date.month.toString().padLeft(2, '0');
     final day = date.day.toString().padLeft(2, '0');

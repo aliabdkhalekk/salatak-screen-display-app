@@ -96,16 +96,16 @@ class _PrayerRow extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       padding: EdgeInsets.symmetric(
-        horizontal: AppLayout.gap(context, compact: 16, medium: 18, expanded: 20),
+        horizontal:
+            AppLayout.gap(context, compact: 16, medium: 18, expanded: 20),
         vertical: AppLayout.gap(context, compact: 12, medium: 14, expanded: 16),
       ),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(AppLayout.radius(context) * 0.72),
         border: Border.all(
-          color: isNext
-              ? const Color(0xFFE8DDB6)
-              : Colors.white.withOpacity(0.10),
+          color:
+              isNext ? const Color(0xFFE8DDB6) : Colors.white.withOpacity(0.10),
         ),
       ),
       child: Row(

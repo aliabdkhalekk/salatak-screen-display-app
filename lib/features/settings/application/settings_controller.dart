@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/layout/tv_screen_profile.dart';
 import '../data/settings_repository.dart';
 import '../domain/app_settings.dart';
 
@@ -37,14 +36,17 @@ class SettingsController extends Notifier<AppSettings> {
     await _repository.saveSettings(state);
   }
 
-  Future<void> updateTvScreenProfile(TvScreenProfile profile) async {
-    state = state.copyWith(tvScreenProfile: profile);
-    await _repository.saveSettings(state);
-  }
-
   Future<void> updateDisplayFontSize(DisplayFontSizeOption option) async {
     state = state.copyWith(displayFontSize: option);
     await _repository.saveSettings(state);
+  }
+
+  Future<void> increaseDisplayFontSize() async {
+    await updateDisplayFontSize(state.displayFontSize.next());
+  }
+
+  Future<void> decreaseDisplayFontSize() async {
+    await updateDisplayFontSize(state.displayFontSize.previous());
   }
 
   Future<void> updateDisplayFontWeight(DisplayFontWeightOption option) async {
@@ -52,65 +54,63 @@ class SettingsController extends Notifier<AppSettings> {
     await _repository.saveSettings(state);
   }
 
-  Future<void> updateAutoScrollSpeed(AutoScrollSpeedOption option) async {
-    state = state.copyWith(autoScrollSpeed: option);
-    await _repository.saveSettings(state);
-  }
-
-  Future<void> selectContentForToday({
-    required String contentId,
-    required String title,
-    DateTime? now,
-  }) async {
-    state = state.withSelectedContentForToday(
-      contentId: contentId,
-      title: title,
-      now: now ?? DateTime.now(),
-    );
-    await _repository.saveSettings(state);
-  }
-
-  Future<void> pinContentSelection({
-    required String contentId,
-    required String title,
-  }) async {
-    state = state.withPinnedContentSelection(
-      contentId: contentId,
-      title: title,
-    );
-    await _repository.saveSettings(state);
-  }
-
-  Future<void> clearManualContentSelection() async {
-    state = state.withAutomaticContentSelection();
-    await _repository.saveSettings(state);
-  }
-
-  Future<void> resetExpiredSelectedContentIfNeeded([DateTime? now]) async {
-    final currentTime = now ?? DateTime.now();
-    if (state.contentSelectionMode != ContentSelectionMode.selectedForToday) {
-      return;
-    }
-
-    if (state.selectedContentDateKey == AppSettings.dayKeyFrom(currentTime)) {
-      return;
-    }
-
-    if (!state.hasStoredContentSelection) {
-      return;
-    }
-
-    state = state.withAutomaticContentSelection();
-    await _repository.saveSettings(state);
-  }
-
   Future<void> updatePrePrayerWindowMinutes(int minutes) async {
-    state = state.copyWith(prePrayerWindowMinutes: minutes);
+    state = state.copyWith(prePrayerWindowMinutes: minutes.clamp(1, 120));
     await _repository.saveSettings(state);
   }
 
-  Future<void> updatePostPrayerWindowMinutes(int minutes) async {
-    state = state.copyWith(postPrayerWindowMinutes: minutes);
+  Future<void> updateEntryDuaDurationMinutes(int minutes) async {
+    state = state.copyWith(entryDuaDurationMinutes: minutes.clamp(1, 120));
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateAzkarDurationMinutes(int minutes) async {
+    state = state.copyWith(azkarDurationMinutes: minutes.clamp(1, 180));
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateExitDuaDurationMinutes(int minutes) async {
+    state = state.copyWith(exitDuaDurationMinutes: minutes.clamp(1, 180));
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateUiScalePercent(int percent) async {
+    state = state.copyWith(uiScalePercent: percent.clamp(80, 140));
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateZikrTextScalePercent(int percent) async {
+    state = state.copyWith(zikrTextScalePercent: percent.clamp(70, 160));
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateSleepBrightnessPercent(int percent) async {
+    state = state.copyWith(sleepBrightnessPercent: percent.clamp(1, 100));
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateAutoScreenControlEnabled(bool enabled) async {
+    state = state.copyWith(autoScreenControlEnabled: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateEntryDuaEnabled(bool enabled) async {
+    state = state.copyWith(entryDuaEnabled: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateAfterPrayerAzkarEnabled(bool enabled) async {
+    state = state.copyWith(afterPrayerAzkarEnabled: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateExitDuaEnabled(bool enabled) async {
+    state = state.copyWith(exitDuaEnabled: enabled);
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> updateManualOverrideMode(bool enabled) async {
+    state = state.copyWith(manualOverrideMode: enabled);
     await _repository.saveSettings(state);
   }
 }

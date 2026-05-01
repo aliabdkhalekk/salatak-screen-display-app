@@ -40,14 +40,16 @@ class ContentCatalog {
   }
 
   List<ContentItem> get nawawiItems {
-    final list = items.where((item) => item.type == ContentType.nawawi).toList();
+    final list =
+        items.where((item) => item.type == ContentType.nawawi).toList();
     list.sort((a, b) => a.order.compareTo(b.order));
     return list;
   }
 
   List<ContentItem> get libraryItems {
     final list = items.where((item) {
-      return item.text.trim().isNotEmpty && !item.tags.contains('prayer_window');
+      return item.text.trim().isNotEmpty &&
+          !item.tags.contains('prayer_window');
     }).toList();
 
     list.sort((a, b) {

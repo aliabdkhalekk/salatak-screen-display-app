@@ -56,8 +56,8 @@ class TvViewportFrame extends StatelessWidget {
           TvViewportData.designCanvas.width - safePadding.horizontal,
           TvViewportData.designCanvas.height - safePadding.vertical,
         );
-        final designAspect =
-            TvViewportData.designCanvas.width / TvViewportData.designCanvas.height;
+        final designAspect = TvViewportData.designCanvas.width /
+            TvViewportData.designCanvas.height;
         final designScale = math.min(
           viewportSize.width / TvViewportData.designCanvas.width,
           viewportSize.height / TvViewportData.designCanvas.height,

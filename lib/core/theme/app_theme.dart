@@ -6,6 +6,7 @@ import 'tv_display_scale.dart';
 abstract final class AppTheme {
   static ThemeData build({
     required TvScreenProfile profile,
+    required double uiScale,
     required double fontScale,
     required bool boldText,
   }) {
@@ -14,7 +15,10 @@ abstract final class AppTheme {
     const teal = Color(0xFF173E46);
     const emerald = Color(0xFF1D6B5A);
     const navy = Color(0xFF091318);
-    final scale = TvDisplayScale.fromProfile(profile).withFontScale(fontScale);
+    final scale =
+        TvDisplayScale.fromProfile(profile).scaled(uiScale).withFontScale(
+              fontScale,
+            );
 
     final displayWeight = boldText ? FontWeight.w800 : FontWeight.w700;
     final titleWeight = boldText ? FontWeight.w700 : FontWeight.w600;

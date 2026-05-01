@@ -95,9 +95,8 @@ abstract final class AppLayout {
     double maxWidth = 1600,
   }) {
     final screenWidth = width(context);
-    final progress =
-        ((screenWidth - minWidth) / (maxWidth - minWidth)).clamp(0.0, 1.0)
-            as double;
+    final progress = ((screenWidth - minWidth) / (maxWidth - minWidth))
+        .clamp(0.0, 1.0) as double;
     final fluidValue = min + (max - min) * progress;
     final profileTextScale =
         scale(context).textScaleFactor.clamp(0.78, 1.60) as double;
