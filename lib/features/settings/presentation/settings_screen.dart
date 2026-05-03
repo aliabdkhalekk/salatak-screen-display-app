@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_cities.dart';
@@ -8,6 +9,7 @@ import '../../../core/layout/app_layout.dart';
 import '../../../core/layout/tv_screen_profile.dart';
 import '../../../core/layout/tv_viewport_frame.dart';
 import '../../../core/platform/screen_control_service.dart';
+import '../../../core/widgets/auto_scrolling_text.dart';
 import '../../../core/widgets/ensure_visible_on_focus.dart';
 import '../../../core/widgets/section_card.dart';
 import '../../automation/domain/prayer_flow_models.dart';
@@ -185,6 +187,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   .updateArabicFontStyle(value);
             }
           },
+        ),
+        _rowGap(),
+        _SettingsScrollSpeedRow(
+          value: settings.autoScrollSpeedMultiplier,
+          autofocus: true,
+          onChanged: (value) {
+            ref
+                .read(settingsControllerProvider.notifier)
+                .updateAutoScrollSpeedMultiplier(value);
+          },
+        ),
+        _rowGap(),
+        _SettingsScrollSpeedPreview(
+          speedMultiplier: settings.autoScrollSpeedMultiplier,
         ),
       ],
     );
@@ -601,7 +617,7 @@ class _Header extends StatelessWidget {
     return Row(
       children: [
         FilledButton.icon(
-          autofocus: true,
+          autofocus: false,
           onPressed: onBack,
           icon: const Icon(Icons.arrow_back_rounded),
           label: const Text('عودة'),
@@ -847,6 +863,294 @@ class _SettingsInfoRow extends StatelessWidget {
   }
 }
 
+class _SettingsScrollSpeedRow extends StatelessWidget {
+  const _SettingsScrollSpeedRow({
+    required this.value,
+    this.autofocus = false,
+    required this.onChanged,
+  });
+
+  final double value;
+  final bool autofocus;
+  final ValueChanged<double> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedValue = normalizeAutoScrollSpeedMultiplier(value);
+    final speedText = autoScrollSpeedText(normalizedValue);
+    final canDecrease = normalizedValue > kAutoScrollSpeedMultipliers.first;
+    final canIncrease = normalizedValue < kAutoScrollSpeedMultipliers.last;
+
+    void decrease() {
+      if (!canDecrease) {
+        return;
+      }
+      onChanged(previousAutoScrollSpeedMultiplier(normalizedValue));
+    }
+
+    void increase() {
+      if (!canIncrease) {
+        return;
+      }
+      onChanged(nextAutoScrollSpeedMultiplier(normalizedValue));
+    }
+
+    return DecoratedBox(
+      decoration: _rowDecoration(context),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppLayout.cardPadding(context) * 0.6,
+          vertical: AppLayout.cardPadding(context) * 0.34,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'سرعة نزول الأذكار',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: AppLayout.fluid(context, min: 20, max: 26),
+                  ),
+            ),
+            SizedBox(height: AppLayout.gap(context, compact: 10, medium: 14)),
+            Shortcuts(
+              shortcuts: const <ShortcutActivator, Intent>{
+                SingleActivator(LogicalKeyboardKey.arrowLeft):
+                    _AdjustScrollSpeedIntent(increase: false),
+                SingleActivator(LogicalKeyboardKey.arrowRight):
+                    _AdjustScrollSpeedIntent(increase: true),
+              },
+              child: Actions(
+                actions: <Type, Action<Intent>>{
+                  _AdjustScrollSpeedIntent:
+                      CallbackAction<_AdjustScrollSpeedIntent>(
+                    onInvoke: (intent) {
+                      if (intent.increase) {
+                        increase();
+                      } else {
+                        decrease();
+                      }
+                      return null;
+                    },
+                  ),
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _StepperButton(
+                      icon: Icons.remove_rounded,
+                      autofocus: autofocus,
+                      onPressed: decrease,
+                    ),
+                    SizedBox(
+                      width: AppLayout.gap(context, compact: 14, medium: 20),
+                    ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 180),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child:
+                              ScaleTransition(scale: animation, child: child),
+                        );
+                      },
+                      child: Text(
+                        speedText,
+                        key: ValueKey<String>(speedText),
+                        style:
+                            Theme.of(context).textTheme.displaySmall?.copyWith(
+                                  fontSize: AppLayout.fluid(
+                                    context,
+                                    min: 28,
+                                    max: 36,
+                                  ),
+                                  color: const Color(0xFFD8BE74),
+                                ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: AppLayout.gap(context, compact: 14, medium: 20),
+                    ),
+                    _StepperButton(
+                      icon: Icons.add_rounded,
+                      onPressed: increase,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: AppLayout.gap(context, compact: 8, medium: 10)),
+            Text(
+              'بطيء جداً – بطيء – عادي – سريع',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.72),
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AdjustScrollSpeedIntent extends Intent {
+  const _AdjustScrollSpeedIntent({required this.increase});
+
+  final bool increase;
+}
+
+class _StepperButton extends StatefulWidget {
+  const _StepperButton({
+    required this.icon,
+    required this.onPressed,
+    this.autofocus = false,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool autofocus;
+
+  @override
+  State<_StepperButton> createState() => _StepperButtonState();
+}
+
+class _StepperButtonState extends State<_StepperButton> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = AppLayout.fluid(context, min: 56, max: 72);
+    return FocusableActionDetector(
+      autofocus: widget.autofocus,
+      shortcuts: const <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+      },
+      actions: <Type, Action<Intent>>{
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (intent) {
+            widget.onPressed();
+            return null;
+          },
+        ),
+      },
+      onShowFocusHighlight: (focused) => setState(() => _focused = focused),
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 140),
+        scale: _focused ? 1.07 : 1,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onPressed,
+            borderRadius: BorderRadius.circular(size),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 140),
+              curve: Curves.easeOutCubic,
+              height: size,
+              width: size,
+              decoration: BoxDecoration(
+                color: _focused
+                    ? const Color(0xFFD8BE74).withValues(alpha: 0.20)
+                    : Colors.white.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(size),
+                border: Border.all(
+                  color: _focused
+                      ? const Color(0xFFD8BE74)
+                      : Colors.white.withValues(alpha: 0.24),
+                  width: 2,
+                ),
+                boxShadow: _focused
+                    ? [
+                        BoxShadow(
+                          color:
+                              const Color(0xFFD8BE74).withValues(alpha: 0.40),
+                          blurRadius: 18,
+                          spreadRadius: 0.8,
+                        ),
+                      ]
+                    : const [],
+              ),
+              child: Icon(
+                widget.icon,
+                size: AppLayout.fluid(context, min: 32, max: 40),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsScrollSpeedPreview extends StatelessWidget {
+  const _SettingsScrollSpeedPreview({
+    required this.speedMultiplier,
+  });
+
+  final double speedMultiplier;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: _rowDecoration(context),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppLayout.cardPadding(context) * 0.6,
+          vertical: AppLayout.cardPadding(context) * 0.38,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'معاينة سرعة النزول',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: AppLayout.fluid(context, min: 20, max: 26),
+                    color: const Color(0xFFD8BE74),
+                  ),
+            ),
+            SizedBox(height: AppLayout.gap(context, compact: 8, medium: 12)),
+            SizedBox(
+              height: AppLayout.fluid(context, min: 180, max: 230),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth * 0.76,
+                      ),
+                      child: ClipRect(
+                        child: SizedBox.expand(
+                          child: AutoScrollingText(
+                            text: _scrollPreviewText,
+                            textAlign: TextAlign.center,
+                            speedMultiplier: speedMultiplier,
+                            pixelsPerSecond: 15,
+                            startDelay: const Duration(milliseconds: 600),
+                            endPause: const Duration(milliseconds: 900),
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppLayout.gap(context,
+                                  compact: 12, medium: 18),
+                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(height: 1.8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _PreviewButton extends StatelessWidget {
   const _PreviewButton({
     required this.label,
@@ -867,6 +1171,9 @@ class _PreviewButton extends StatelessWidget {
     );
   }
 }
+
+const String _scrollPreviewText = 'اللهم أعنّي على ذكرك وشكرك وحسن عبادتك. '
+    'سبحان الله والحمد لله ولا إله إلا الله والله أكبر.';
 
 InputDecoration _fieldDecoration(BuildContext context) {
   return InputDecoration(

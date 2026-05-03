@@ -176,6 +176,49 @@ extension OffModeTypeOptionX on OffModeTypeOption {
   }
 }
 
+const List<double> kAutoScrollSpeedMultipliers = <double>[
+  0.5,
+  0.75,
+  1.0,
+  1.25,
+  1.5,
+  2.0,
+  3.0,
+];
+
+double normalizeAutoScrollSpeedMultiplier(double value) {
+  return kAutoScrollSpeedMultipliers.reduce(
+    (closest, current) =>
+        (current - value).abs() < (closest - value).abs() ? current : closest,
+  );
+}
+
+double nextAutoScrollSpeedMultiplier(double current) {
+  final normalized = normalizeAutoScrollSpeedMultiplier(current);
+  final currentIndex = kAutoScrollSpeedMultipliers.indexOf(normalized);
+  if (currentIndex >= kAutoScrollSpeedMultipliers.length - 1) {
+    return normalized;
+  }
+  return kAutoScrollSpeedMultipliers[currentIndex + 1];
+}
+
+double previousAutoScrollSpeedMultiplier(double current) {
+  final normalized = normalizeAutoScrollSpeedMultiplier(current);
+  final currentIndex = kAutoScrollSpeedMultipliers.indexOf(normalized);
+  if (currentIndex <= 0) {
+    return normalized;
+  }
+  return kAutoScrollSpeedMultipliers[currentIndex - 1];
+}
+
+String autoScrollSpeedText(double value) {
+  final normalized = normalizeAutoScrollSpeedMultiplier(value);
+  if (normalized == normalized.roundToDouble()) {
+    return '${normalized.toStringAsFixed(1)}x';
+  }
+  return '${normalized.toStringAsFixed(2)}x';
+}
+
 class AppSettings {
   const AppSettings({
     required this.screenProfile,
@@ -207,6 +250,7 @@ class AppSettings {
     required this.afterPrayerAzkarEnabled,
     required this.exitDuaEnabled,
     required this.manualOverrideMode,
+    required this.autoScrollSpeedMultiplier,
   });
 
   factory AppSettings.defaults() {
@@ -240,6 +284,7 @@ class AppSettings {
       afterPrayerAzkarEnabled: true,
       exitDuaEnabled: true,
       manualOverrideMode: false,
+      autoScrollSpeedMultiplier: 1.0,
     );
   }
 
@@ -272,6 +317,7 @@ class AppSettings {
   final bool afterPrayerAzkarEnabled;
   final bool exitDuaEnabled;
   final bool manualOverrideMode;
+  final double autoScrollSpeedMultiplier;
 
   int manualAdjustmentFor(PrayerName prayer) {
     switch (prayer) {
@@ -318,6 +364,7 @@ class AppSettings {
     bool? afterPrayerAzkarEnabled,
     bool? exitDuaEnabled,
     bool? manualOverrideMode,
+    double? autoScrollSpeedMultiplier,
   }) {
     return AppSettings(
       screenProfile: screenProfile ?? this.screenProfile,
@@ -362,6 +409,8 @@ class AppSettings {
           afterPrayerAzkarEnabled ?? this.afterPrayerAzkarEnabled,
       exitDuaEnabled: exitDuaEnabled ?? this.exitDuaEnabled,
       manualOverrideMode: manualOverrideMode ?? this.manualOverrideMode,
+      autoScrollSpeedMultiplier:
+          autoScrollSpeedMultiplier ?? this.autoScrollSpeedMultiplier,
     );
   }
 

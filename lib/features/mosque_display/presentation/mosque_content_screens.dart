@@ -82,6 +82,7 @@ abstract final class MosqueContentScreens {
       case DisplayStateMode.postPrayerAzkar:
         return MosqueAzkarScreen(
           text: afterPrayerAzkarContent.first.text,
+          autoScrollSpeedMultiplier: settings.autoScrollSpeedMultiplier,
           now: now,
           prayerDay: prayerDay,
           showFooter: settings.showNextPrayerFooter,
@@ -263,6 +264,7 @@ class MosqueAzkarScreen extends StatelessWidget {
   const MosqueAzkarScreen({
     super.key,
     required this.text,
+    required this.autoScrollSpeedMultiplier,
     required this.now,
     required this.prayerDay,
     required this.showFooter,
@@ -271,6 +273,7 @@ class MosqueAzkarScreen extends StatelessWidget {
   });
 
   final String text;
+  final double autoScrollSpeedMultiplier;
   final DateTime now;
   final PrayerDayInfo? prayerDay;
   final bool showFooter;
@@ -303,15 +306,24 @@ class MosqueAzkarScreen extends StatelessWidget {
           horizontal: AppLayout.gap(context, compact: 18, medium: 32),
         ),
         child: _CenteredContentFrame(
-          maxWidthFactor: 0.68,
+          maxWidthFactor: 0.76,
           allowInternalScroll: false,
-          child: AutoScrollingText(
-            text: text,
-            textAlign: TextAlign.center,
-            style: style,
-            pixelsPerSecond: 15,
-            startDelay: const Duration(seconds: 3),
-            endPause: const Duration(seconds: 4),
+          centerChild: false,
+          child: ClipRect(
+            child: SizedBox.expand(
+              child: AutoScrollingText(
+                text: text,
+                textAlign: TextAlign.center,
+                style: style,
+                pixelsPerSecond: 15,
+                speedMultiplier: autoScrollSpeedMultiplier,
+                startDelay: const Duration(seconds: 3),
+                endPause: const Duration(seconds: 4),
+                padding: EdgeInsets.symmetric(
+                  vertical: AppLayout.gap(context, compact: 24, medium: 38),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -420,6 +432,12 @@ class _MosqueScaffold extends StatelessWidget {
           child: Builder(
             builder: (context) {
               final padding = AppLayout.pagePadding(context);
+              final topBarHeight = AppLayout.fluid(context, min: 54, max: 72);
+              final sectionGap = AppLayout.gap(
+                context,
+                compact: 12,
+                medium: 18,
+              );
               final footerBottomInset = AppLayout.fluid(
                 context,
                 min: 20,
@@ -427,36 +445,38 @@ class _MosqueScaffold extends StatelessWidget {
               );
               return Padding(
                 padding: EdgeInsets.all(padding),
-                child: Stack(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Positioned.fill(
-                      child: Center(child: child),
-                    ),
-                    Align(
-                      alignment: AlignmentDirectional.topCenter,
-                      child: _MosqueTopBar(
-                        title: title,
-                        now: now,
-                        onOpenSettings: onOpenSettings,
-                        controlsVisible: controlsVisible,
+                    SafeArea(
+                      bottom: false,
+                      child: SizedBox(
+                        height: topBarHeight,
+                        child: _MosqueTopBar(
+                          title: title,
+                          now: now,
+                          onOpenSettings: onOpenSettings,
+                          controlsVisible: controlsVisible,
+                        ),
                       ),
                     ),
-                    if (showFooter && prayerDay != null)
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: SafeArea(
-                          top: false,
-                          minimum: EdgeInsets.only(bottom: footerBottomInset),
-                          child: Center(
-                            child: _NextPrayerFooter(
-                              now: now,
-                              prayerDay: prayerDay!,
-                            ),
+                    SizedBox(height: sectionGap),
+                    Expanded(
+                      child: child,
+                    ),
+                    if (showFooter && prayerDay != null) ...[
+                      SizedBox(height: sectionGap),
+                      SafeArea(
+                        top: false,
+                        minimum: EdgeInsets.only(bottom: footerBottomInset),
+                        child: Center(
+                          child: _NextPrayerFooter(
+                            now: now,
+                            prayerDay: prayerDay!,
                           ),
                         ),
                       ),
+                    ],
                   ],
                 ),
               );
@@ -472,11 +492,13 @@ class _CenteredContentFrame extends StatelessWidget {
   const _CenteredContentFrame({
     this.maxWidthFactor = 0.70,
     this.allowInternalScroll = true,
+    this.centerChild = true,
     required this.child,
   });
 
   final double maxWidthFactor;
   final bool allowInternalScroll;
+  final bool centerChild;
   final Widget child;
 
   @override
@@ -489,19 +511,25 @@ class _CenteredContentFrame extends StatelessWidget {
             constraints: BoxConstraints(maxWidth: maxWidth),
             child: SizedBox(
               height: constraints.maxHeight,
-              child: Center(
-                child: allowInternalScroll
-                    ? SingleChildScrollView(
-                        physics: const ClampingScrollPhysics(),
-                        child: Center(child: child),
-                      )
-                    : child,
-              ),
+              child: _buildBody(),
             ),
           ),
         );
       },
     );
+  }
+
+  Widget _buildBody() {
+    final body = allowInternalScroll
+        ? SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Center(child: child),
+          )
+        : child;
+    if (!centerChild) {
+      return body;
+    }
+    return Center(child: body);
   }
 }
 

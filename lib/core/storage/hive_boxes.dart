@@ -36,6 +36,8 @@ abstract final class HiveKeys {
   static const String afterPrayerAzkarEnabled = 'after_prayer_azkar_enabled';
   static const String exitDuaEnabled = 'exit_dua_enabled';
   static const String manualOverrideMode = 'manual_override_mode';
+  static const String autoScrollSpeedMultiplier =
+      'auto_scroll_speed_multiplier';
 
   static const String hijriSyncSnapshot = 'hijri_sync_snapshot';
   static const String remoteContentBundle = 'remote_content_bundle';

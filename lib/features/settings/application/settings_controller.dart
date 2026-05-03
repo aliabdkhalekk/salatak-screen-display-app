@@ -167,4 +167,24 @@ class SettingsController extends Notifier<AppSettings> {
     state = state.copyWith(manualOverrideMode: enabled);
     await _repository.saveSettings(state);
   }
+
+  Future<void> updateAutoScrollSpeedMultiplier(double multiplier) async {
+    final normalized = normalizeAutoScrollSpeedMultiplier(multiplier);
+    state = state.copyWith(
+      autoScrollSpeedMultiplier: normalized,
+    );
+    await _repository.saveSettings(state);
+  }
+
+  Future<void> increaseAutoScrollSpeedMultiplier() async {
+    await updateAutoScrollSpeedMultiplier(
+      nextAutoScrollSpeedMultiplier(state.autoScrollSpeedMultiplier),
+    );
+  }
+
+  Future<void> decreaseAutoScrollSpeedMultiplier() async {
+    await updateAutoScrollSpeedMultiplier(
+      previousAutoScrollSpeedMultiplier(state.autoScrollSpeedMultiplier),
+    );
+  }
 }

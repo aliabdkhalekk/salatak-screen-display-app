@@ -8,19 +8,25 @@ class AutoScrollingText extends StatefulWidget {
     required this.text,
     this.style,
     this.textAlign = TextAlign.start,
+    this.padding = EdgeInsets.zero,
+    this.centerWhenNotScrollable = true,
     this.startDelay = const Duration(seconds: 2),
     this.endPause = const Duration(seconds: 2),
     this.restartDelay = const Duration(milliseconds: 700),
     this.pixelsPerSecond = 18,
+    this.speedMultiplier = 1.0,
   });
 
   final String text;
   final TextStyle? style;
   final TextAlign textAlign;
+  final EdgeInsetsGeometry padding;
+  final bool centerWhenNotScrollable;
   final Duration startDelay;
   final Duration endPause;
   final Duration restartDelay;
   final double pixelsPerSecond;
+  final double speedMultiplier;
 
   @override
   State<AutoScrollingText> createState() => _AutoScrollingTextState();
@@ -51,7 +57,10 @@ class _AutoScrollingTextState extends State<AutoScrollingText> {
         oldWidget.startDelay != widget.startDelay ||
         oldWidget.endPause != widget.endPause ||
         oldWidget.restartDelay != widget.restartDelay ||
-        oldWidget.pixelsPerSecond != widget.pixelsPerSecond;
+        oldWidget.pixelsPerSecond != widget.pixelsPerSecond ||
+        oldWidget.speedMultiplier != widget.speedMultiplier ||
+        oldWidget.padding != widget.padding ||
+        oldWidget.centerWhenNotScrollable != widget.centerWhenNotScrollable;
     if (shouldRestart) {
       _scheduleLoop(resetToTop: true);
     }
@@ -100,8 +109,10 @@ class _AutoScrollingTextState extends State<AutoScrollingText> {
         _controller.jumpTo(0);
       }
 
+      final effectivePixelsPerSecond =
+          (widget.pixelsPerSecond * widget.speedMultiplier).clamp(1.0, 300.0);
       final duration = Duration(
-        milliseconds: ((maxScroll / widget.pixelsPerSecond) * 1000).round(),
+        milliseconds: ((maxScroll / effectivePixelsPerSecond) * 1000).round(),
       );
 
       try {
@@ -126,7 +137,7 @@ class _AutoScrollingTextState extends State<AutoScrollingText> {
 
       final returnDuration = Duration(
         milliseconds:
-            ((((maxScroll / (widget.pixelsPerSecond * 2.6)) * 1000).round())
+            ((((maxScroll / (effectivePixelsPerSecond * 2.6)) * 1000).round())
                 .clamp(900, 2200)),
       );
 
@@ -150,16 +161,50 @@ class _AutoScrollingTextState extends State<AutoScrollingText> {
 
   @override
   Widget build(BuildContext context) {
+    final textWidget = Text(
+      widget.text,
+      textAlign: widget.textAlign,
+      style: widget.style,
+    );
+
     return ScrollConfiguration(
       behavior: const _NoGlowScrollBehavior(),
-      child: SingleChildScrollView(
-        controller: _controller,
-        physics: const NeverScrollableScrollPhysics(),
-        child: Text(
-          widget.text,
-          textAlign: widget.textAlign,
-          style: widget.style,
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final resolvedPadding =
+              widget.padding.resolve(Directionality.of(context));
+          final availableWidth =
+              (constraints.maxWidth - resolvedPadding.horizontal)
+                  .clamp(0.0, double.infinity);
+          final textPainter = TextPainter(
+            text: TextSpan(text: widget.text, style: widget.style),
+            textAlign: widget.textAlign,
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout(maxWidth: availableWidth);
+
+          final textFits = widget.centerWhenNotScrollable &&
+              (textPainter.height + resolvedPadding.vertical) <=
+                  constraints.maxHeight;
+
+          if (textFits) {
+            return Center(
+              child: Padding(
+                padding: widget.padding,
+                child: textWidget,
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            controller: _controller,
+            physics: const NeverScrollableScrollPhysics(),
+            child: Padding(
+              padding: widget.padding,
+              child: textWidget,
+            ),
+          );
+        },
       ),
     );
   }

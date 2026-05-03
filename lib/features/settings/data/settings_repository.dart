@@ -80,6 +80,11 @@ class SettingsRepository {
           (_settingsBox.get(HiveKeys.exitDuaEnabled) as bool?) ?? true,
       manualOverrideMode:
           (_settingsBox.get(HiveKeys.manualOverrideMode) as bool?) ?? false,
+      autoScrollSpeedMultiplier: normalizeAutoScrollSpeedMultiplier(
+        (_settingsBox.get(HiveKeys.autoScrollSpeedMultiplier) as num?)
+                ?.toDouble() ??
+            1.0,
+      ),
     );
   }
 
@@ -190,6 +195,10 @@ class SettingsRepository {
     await _settingsBox.put(
       HiveKeys.manualOverrideMode,
       settings.manualOverrideMode,
+    );
+    await _settingsBox.put(
+      HiveKeys.autoScrollSpeedMultiplier,
+      settings.autoScrollSpeedMultiplier,
     );
   }
 
